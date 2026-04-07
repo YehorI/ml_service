@@ -14,7 +14,7 @@ class BalanceService:
         self._transaction_repository = transaction_repository
 
     def deposit(self, user: User, amount: float) -> DepositTransaction:
-        NotImplemented
+        raise NotImplementedError
 
     def charge_for_task(self, user: User, task: MLTask) -> DebitTransaction:
-        NotImplemented
+        raise NotImplementedError

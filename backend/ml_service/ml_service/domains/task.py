@@ -13,13 +13,6 @@ class TaskStatus(Enum):
     FAILED = "failed"
 
 
-class InputDataType(Enum):
-    TEXT = "text"
-    IMAGE = "image"
-    AUDIO = "audio"
-    DOCUMENT = "document"
-
-
 class PredictionResult:
     def __init__(
         self,
@@ -63,14 +56,12 @@ class MLTask:
         user: User,
         model: MLModel,
         input_data: Any,
-        input_type: InputDataType,
         created_at: datetime | None = None,
     ) -> None:
         self._task_id = task_id
         self._user = user
         self._model = model
         self._input_data = input_data
-        self._input_type = input_type
         self._status = TaskStatus.PENDING
         self._result: PredictionResult | None = None
         self._validation_errors: list[str] = []
@@ -94,10 +85,6 @@ class MLTask:
         return self._input_data
 
     @property
-    def input_type(self) -> InputDataType:
-        return self._input_type
-
-    @property
     def status(self) -> TaskStatus:
         return self._status
 
@@ -118,4 +105,4 @@ class MLTask:
         return self._completed_at
     
     def process(self) -> PredictionResult:
-        NotImplemented
+        raise NotImplementedError

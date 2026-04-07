@@ -1,4 +1,4 @@
-from ml_service.domains.task import InputDataType, MLTask
+from ml_service.domains.task import MLTask
 from ml_service.interfaces.repositories import (
     MLModelRepository,
     MLTaskRepository,
@@ -26,6 +26,5 @@ class TaskService:
         user: User,
         model_id: int,
         input_data: object,
-        input_type: InputDataType,
     ) -> MLTask:
-        NotImplemented
+        raise NotImplementedError

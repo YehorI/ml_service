@@ -85,5 +85,5 @@ class AdminUser(User):
     ) -> None:
         super().__init__(user_id, username, email, password_hash, UserRole.ADMIN, balance, created_at)
 
-    def set_user_balance (self, user: User, amount: float) -> None:
-        NotImplemented
+    def set_user_balance(self, user: User, amount: float) -> None:
+        raise NotImplementedError

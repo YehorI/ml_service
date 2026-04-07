@@ -7,7 +7,7 @@ class UserService:
         self._user_repository = user_repository
 
     def register(self, username: str, email: str, password_hash: str) -> User:
-        NotImplemented
+        raise NotImplementedError
 
     def authenticate(self, username: str, password_hash: str) -> User:
-        NotImplemented
+        raise NotImplementedError
