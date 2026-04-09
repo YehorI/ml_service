@@ -8,7 +8,7 @@ COPY ./pyproject.toml ./uv.lock /app/
 
 COPY ./ml_service /app/ml_service
 
-RUN uv sync --no-install-project --no-dev --all-extras
+RUN uv pip install --system --no-cache -r pyproject.toml
 
-
-ENTRYPOINT ["uv", "run", "--no-sync", "python", "-m", "ml_service"]
+# Запускаем через python напрямую
+ENTRYPOINT ["python", "-m", "ml_service"]

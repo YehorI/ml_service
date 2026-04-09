@@ -7,7 +7,6 @@ services:
       - ../backend/.env
     volumes:
       - ../backend:/app
-      - backend-venv:/app/.venv
       - backend-data:/var/lib/app/data
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
@@ -91,7 +90,6 @@ services:
 
 volumes:
   backend-data:
-  backend-venv:
   postgres-data:
   traefik-certificates-data:
   rabbitmq-data:
