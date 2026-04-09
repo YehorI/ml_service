@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
+from ml_service.domains.wallet import Wallet
 from ml_service.domains.user import User
 from ml_service.domains.ml_model import MLModel
 from ml_service.domains.task import MLTask, PredictionResult
@@ -23,6 +24,17 @@ class UserRepository(ABC):
 
     @abstractmethod
     def update(self, user: User) -> User: ...
+
+
+class BalanceRepository(ABC):
+    @abstractmethod
+    def get_by_user_id(self, user_id: int) -> Wallet | None: ...
+
+    @abstractmethod
+    def save(self, wallet: Wallet) -> Wallet: ...
+
+    @abstractmethod
+    def update(self, wallet: Wallet) -> Wallet: ...
 
 
 class MLModelRepository(ABC):
@@ -70,6 +82,3 @@ class TransactionRepository(ABC):
 
     @abstractmethod
     def save(self, transaction: Transaction) -> Transaction: ...
-
-
-

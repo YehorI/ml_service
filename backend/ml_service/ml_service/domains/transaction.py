@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
 
+from .wallet import Wallet
 from .user import User
 from .task import MLTask
 
@@ -15,7 +16,7 @@ class Transaction(ABC):
     def __init__(
         self,
         transaction_id: int,
-        user: User,
+        wallet: Wallet,
         amount: float,
         created_at: datetime | None = None,
     ) -> None:
@@ -30,8 +31,8 @@ class Transaction(ABC):
         return self._transaction_id
 
     @property
-    def user(self) -> User:
-        return self._user
+    def wallet(self) -> Wallet:
+        return self._wallet
 
     @property
     def amount(self) -> float:
@@ -59,10 +60,7 @@ class DepositTransaction(Transaction):
         return TransactionType.DEPOSIT
 
     def apply(self) -> None:
-        if self._is_applied:
-            raise RuntimeError("Transaction already applied")
-        self._user.deposit(self._amount)
-        self._is_applied = True
+        raise NotImplementedError
 
 
 class DebitTransaction(Transaction):
@@ -70,11 +68,12 @@ class DebitTransaction(Transaction):
         self,
         transaction_id: int,
         user: User,
+        wallet: Wallet,
         amount: float,
         ml_task: MLTask,
         created_at: datetime | None = None,
     ) -> None:
-        super().__init__(transaction_id, user, amount, created_at)
+        super().__init__(transaction_id, user, wallet, amount, created_at)
         self._ml_task = ml_task
 
     @property
@@ -86,7 +85,4 @@ class DebitTransaction(Transaction):
         return self._ml_task
 
     def apply(self) -> None:
-        if self._is_applied:
-            raise RuntimeError("Transaction already applied")
-        self._user.withdraw(self._amount)
-        self._is_applied = True
+        raise NotImplementedError

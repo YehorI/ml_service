@@ -4,7 +4,7 @@ from ml_service.interfaces.repositories import (
     MLTaskRepository,
     PredictionResultRepository,
 )
-from ml_service.services.balance_service import BalanceService
+from ml_service.services.balance_service import WalletService
 from ml_service.domains.user import User
 
 
@@ -14,12 +14,12 @@ class TaskService:
         task_repository: MLTaskRepository,
         model_repository: MLModelRepository,
         result_repository: PredictionResultRepository,
-        balance_service: BalanceService,
+        wallet_service: WalletService,
     ) -> None:
         self._task_repository = task_repository
         self._model_repository = model_repository
         self._result_repository = result_repository
-        self._balance_service = balance_service
+        self._wallet_service = wallet_service
 
     def create_task(
         self,
