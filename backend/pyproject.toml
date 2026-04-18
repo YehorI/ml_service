@@ -31,6 +31,9 @@ members = [
     "database",
     "database_repository",
     "common",
+    "users",
+    "wallet",
+    "model",
 ]
 
 [build-system]

@@ -1,5 +1,5 @@
-from ml_service.domains.user import User
-from ml_service.interfaces.repositories import UserRepository
+from users.domains.user import User
+from users.interfaces.repositories import UserRepository
 
 
 class UserService:

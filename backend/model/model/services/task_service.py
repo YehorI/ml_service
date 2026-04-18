@@ -1,11 +1,11 @@
-from ml_service.domains.task import MLTask
-from ml_service.interfaces.repositories import (
+from model.domains.task import MLTask
+from model.interfaces.repositories import (
     MLModelRepository,
     MLTaskRepository,
     PredictionResultRepository,
 )
-from ml_service.services.balance_service import WalletService
-from ml_service.domains.user import User
+from users.domains.user import User
+from wallet.services.wallet_service import WalletService
 
 
 class TaskService:

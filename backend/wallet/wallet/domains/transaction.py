@@ -2,9 +2,8 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
 
-from .wallet import Wallet
-from .user import User
-from .task import MLTask
+from users.domains.user import User
+from wallet.domains.wallet import Wallet
 
 
 class TransactionType(Enum):
@@ -16,12 +15,14 @@ class Transaction(ABC):
     def __init__(
         self,
         transaction_id: int,
+        user: User,
         wallet: Wallet,
         amount: float,
         created_at: datetime | None = None,
     ) -> None:
         self._transaction_id = transaction_id
         self._user = user
+        self._wallet = wallet
         self._amount = amount
         self._created_at = created_at or datetime.utcnow()
         self._is_applied = False
@@ -29,6 +30,10 @@ class Transaction(ABC):
     @property
     def transaction_id(self) -> int:
         return self._transaction_id
+
+    @property
+    def user(self) -> User:
+        return self._user
 
     @property
     def wallet(self) -> Wallet:
@@ -60,7 +65,10 @@ class DepositTransaction(Transaction):
         return TransactionType.DEPOSIT
 
     def apply(self) -> None:
-        raise NotImplementedError
+        if self._is_applied:
+            raise ValueError("Transaction already applied")
+        self._wallet.deposit(self._amount)
+        self._is_applied = True
 
 
 class DebitTransaction(Transaction):
@@ -70,19 +78,22 @@ class DebitTransaction(Transaction):
         user: User,
         wallet: Wallet,
         amount: float,
-        ml_task: MLTask,
+        ml_task_id: int,
         created_at: datetime | None = None,
     ) -> None:
         super().__init__(transaction_id, user, wallet, amount, created_at)
-        self._ml_task = ml_task
+        self._ml_task_id = ml_task_id
 
     @property
     def transaction_type(self) -> TransactionType:
         return TransactionType.DEBIT
 
     @property
-    def ml_task(self) -> MLTask:
-        return self._ml_task
+    def ml_task_id(self) -> int:
+        return self._ml_task_id
 
     def apply(self) -> None:
-        raise NotImplementedError
+        if self._is_applied:
+            raise ValueError("Transaction already applied")
+        self._wallet.withdraw(self._amount)
+        self._is_applied = True

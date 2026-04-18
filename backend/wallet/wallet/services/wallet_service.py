@@ -1,8 +1,7 @@
-from ml_service.domains.wallet import Wallet
-from ml_service.domains.transaction import DepositTransaction, DebitTransaction
-from ml_service.domains.task import MLTask
-from ml_service.domains.user import User
-from ml_service.interfaces.repositories import BalanceRepository, TransactionRepository
+from users.domains.user import User
+from wallet.domains.transaction import DebitTransaction, DepositTransaction
+from wallet.domains.wallet import Wallet
+from wallet.interfaces.repositories import BalanceRepository, TransactionRepository
 
 
 class WalletService:
@@ -17,5 +16,11 @@ class WalletService:
     def deposit(self, user: User, wallet: Wallet, amount: float) -> DepositTransaction:
         raise NotImplementedError
 
-    def charge_for_task(self, user: User, wallet: Wallet, task: MLTask) -> DebitTransaction:
+    def charge_for_task(
+        self,
+        user: User,
+        wallet: Wallet,
+        task_id: int,
+        amount: float,
+    ) -> DebitTransaction:
         raise NotImplementedError

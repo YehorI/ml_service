@@ -1,8 +1,6 @@
 from datetime import datetime
 from enum import Enum
 
-from ml_service.domains.wallet import Wallet
-
 
 class UserRole(Enum):
     USER = "user"
@@ -63,13 +61,6 @@ class AdminUser(User):
         password_hash: str,
         created_at: datetime | None = None,
     ) -> None:
-        super().__init__(user_id, username, email, password_hash, UserRole.ADMIN, created_at)
-
-    def set_balance(self, wallet: Wallet, amount: float) -> None:
-        wallet.force_set(amount)
-
-    def credit_balance(self, wallet: Wallet, amount: float) -> None:
-        wallet.deposit(amount)
-
-    def debit_balance(self, wallet: Wallet, amount: float) -> None:
-        wallet.withdraw(amount)
+        super().__init__(
+            user_id, username, email, password_hash, UserRole.ADMIN, created_at
+        )

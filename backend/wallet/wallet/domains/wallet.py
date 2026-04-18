@@ -1,8 +1,7 @@
 class Wallet:
-
     def __init__(self, user_id: int, amount: float = 0.0) -> None:
         if amount < 0:
-            raise ValueError("Initial wallet cannot be negative")
+            raise ValueError("Initial wallet balance cannot be negative")
         self._user_id = user_id
         self._amount = amount
 
@@ -23,7 +22,7 @@ class Wallet:
         if amount <= 0:
             raise ValueError("Withdrawal amount must be positive")
         if self._amount < amount:
-            raise ValueError("Insufficient wallet")
+            raise ValueError("Insufficient funds")
         self._amount -= amount
 
     def has_sufficient_funds(self, amount: float) -> bool:
@@ -31,4 +30,5 @@ class Wallet:
 
     def force_set(self, amount: float) -> None:
         if amount < 0:
-            self._amount = amount
+            raise ValueError("Balance cannot be set to a negative value")
+        self._amount = amount
