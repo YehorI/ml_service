@@ -28,6 +28,9 @@ ml_service = { workspace = true }
 [tool.uv.workspace]
 members = [
     "ml_service",
+    "database",
+    "database_repository",
+    "common",
 ]
 
 [build-system]
