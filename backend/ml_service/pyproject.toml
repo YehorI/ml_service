@@ -4,4 +4,15 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+  "ml-service-database",
+  "ml-service-database-repository",
+  # "ml-service-common"
+
+]
+
+[tool.uv.source]
+ml-service-database = { path = "../database", editable = true }
+ml-service-database-repository = { path = "../database_repository", editable = true }
+# ml-service-common = { path = "../common", editable = true }
+

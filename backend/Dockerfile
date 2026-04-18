@@ -10,5 +10,4 @@ COPY ./ml_service /app/ml_service
 
 RUN uv pip install --system --no-cache -r pyproject.toml
 
-# Запускаем через python напрямую
 ENTRYPOINT ["python", "-m", "ml_service"]
