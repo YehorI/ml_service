@@ -1,10 +1,10 @@
 from datetime import datetime
 from enum import Enum as PyEnum
 
-from sqlalchemy import DateTime, Enum, Float, ForeignKey, JSON
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import JSON, DateTime, Enum, Float, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from database.base import Base
+from database_repository.models.base import Base
 
 
 class TaskStatusORM(PyEnum):
@@ -29,6 +29,11 @@ class MLTaskORM(Base):
     )
     completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
+    user: Mapped["UserORM"] = relationship("UserORM", back_populates="tasks")  # noqa: F821
+    model: Mapped["MLModelORM"] = relationship("MLModelORM", back_populates="tasks")  # noqa: F821
+    result: Mapped["PredictionResultORM"] = relationship("PredictionResultORM", back_populates="task", uselist=False)  # noqa: F821
+    transactions: Mapped[list["TransactionORM"]] = relationship("TransactionORM", back_populates="ml_task")  # noqa: F821
+
 
 class PredictionResultORM(Base):
     __tablename__ = "prediction_results"
@@ -42,3 +47,5 @@ class PredictionResultORM(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=datetime.utcnow
     )
+
+    task: Mapped["MLTaskORM"] = relationship("MLTaskORM", back_populates="result")  # noqa: F821

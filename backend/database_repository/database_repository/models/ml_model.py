@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Float, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from database.base import Base
+from database_repository.models.base import Base
 
 
 class MLModelORM(Base):
@@ -12,3 +12,5 @@ class MLModelORM(Base):
     description: Mapped[str] = mapped_column(Text, nullable=False, default="")
     cost_per_request: Mapped[float] = mapped_column(Float, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+
+    tasks: Mapped[list["MLTaskORM"]] = relationship("MLTaskORM", back_populates="model")  # noqa: F821

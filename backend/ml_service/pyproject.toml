@@ -1,7 +1,7 @@
 [project]
 name = "ml-service"
 version = "0.1.0"
-description = "ML service orchestrating users, wallet, and model packages"
+description = ""
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [

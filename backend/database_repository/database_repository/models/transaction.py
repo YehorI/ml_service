@@ -2,9 +2,9 @@ from datetime import datetime
 from enum import Enum as PyEnum
 
 from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from database.base import Base
+from database_repository.models.base import Base
 
 
 class TransactionTypeORM(PyEnum):
@@ -29,3 +29,7 @@ class TransactionORM(Base):
         DateTime, nullable=False, default=datetime.utcnow
     )
     is_applied: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    user: Mapped["UserORM"] = relationship("UserORM", back_populates="transactions")  # noqa: F821
+    wallet: Mapped["WalletORM"] = relationship("WalletORM", back_populates="transactions")  # noqa: F821
+    ml_task: Mapped["MLTaskORM | None"] = relationship("MLTaskORM", back_populates="transactions")  # noqa: F821

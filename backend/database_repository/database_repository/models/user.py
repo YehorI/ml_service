@@ -2,9 +2,9 @@ from datetime import datetime
 from enum import Enum as PyEnum
 
 from sqlalchemy import DateTime, Enum, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from database.base import Base
+from database_repository.models.base import Base
 
 
 class UserRoleORM(PyEnum):
@@ -25,3 +25,7 @@ class UserORM(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=datetime.utcnow
     )
+
+    wallet: Mapped["WalletORM"] = relationship("WalletORM", back_populates="user", uselist=False)  # noqa: F821
+    tasks: Mapped[list["MLTaskORM"]] = relationship("MLTaskORM", back_populates="user")  # noqa: F821
+    transactions: Mapped[list["TransactionORM"]] = relationship("TransactionORM", back_populates="user")  # noqa: F821

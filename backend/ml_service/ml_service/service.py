@@ -4,11 +4,6 @@ from wallet.services.wallet_service import WalletService
 
 
 class MLService:
-    """
-    Top-level orchestration service.
-    Owns no domain logic — delegates entirely to injected sub-services.
-    """
-
     def __init__(
         self,
         user_service: UserService,

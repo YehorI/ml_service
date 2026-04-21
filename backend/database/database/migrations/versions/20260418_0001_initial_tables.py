@@ -1,10 +1,3 @@
-"""Initial tables
-
-Revision ID: 0001
-Revises:
-Create Date: 2026-04-18
-
-"""
 from typing import Sequence, Union
 
 import sqlalchemy as sa
@@ -25,7 +18,7 @@ def upgrade() -> None:
         sa.Column("password_hash", sa.String(255), nullable=False),
         sa.Column(
             "role",
-            sa.Enum("USER", "ADMIN", name="userrolrorm"),
+            sa.Enum("USER", "ADMIN", name="userroleorm"),
             nullable=False,
             server_default="USER",
         ),
@@ -137,6 +130,6 @@ def downgrade() -> None:
     op.drop_table("ml_models")
     op.drop_table("wallets")
     op.drop_table("users")
-    op.execute("DROP TYPE IF EXISTS userrolrorm")
+    op.execute("DROP TYPE IF EXISTS userroleorm")
     op.execute("DROP TYPE IF EXISTS taskstatusorm")
     op.execute("DROP TYPE IF EXISTS transactiontypeorm")

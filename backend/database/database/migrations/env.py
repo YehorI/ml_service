@@ -4,11 +4,9 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from database.base import Base
-from database.settings import get_settings
-
-# Import all ORM models so they register with Base.metadata
 import database_repository.models  # noqa: F401
+from database_repository.models.base import Base
+from database.settings import get_settings
 
 config = context.config
 

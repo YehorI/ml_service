@@ -2,18 +2,17 @@ import contextvars
 from collections.abc import AsyncGenerator, Generator
 from contextlib import asynccontextmanager, contextmanager
 
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from database.exceptions import HaveNoSessionError
-from database.interfaces import TransactionInterface
-from database.settings import DatabaseSettings, get_settings
+from ml_service_common.sqlalchemy.settings import DatabaseSettings, get_settings
 
 
-class SQLAlchemyService(TransactionInterface):
+class HaveNoSessionError(Exception):
+    pass
+
+
+class Service:
+
     def __init__(self, settings: DatabaseSettings | None = None) -> None:
         self._settings = settings or get_settings()
 
@@ -50,3 +49,7 @@ class SQLAlchemyService(TransactionInterface):
         token = self._session_context.set(session)
         yield
         self._session_context.reset(token)
+
+
+def get_service(settings: DatabaseSettings | None = None) -> Service:
+    return Service(settings=settings)
