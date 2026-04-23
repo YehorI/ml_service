@@ -65,7 +65,7 @@ async def get_current_user(
     credentials: HTTPBasicCredentials = Depends(basic_auth),
     user_service: UserService = Depends(get_user_service),
 ):
-    # учебная аутентификация "без JWT": логин/пароль (Basic Auth) на каждый запрос
+    # TODO JWT
     password_hash = hash_password(credentials.password)
     return await user_service.authenticate(credentials.username, password_hash)
 
