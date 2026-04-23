@@ -1,18 +1,28 @@
 [project]
 name = "ml-service"
 version = "0.1.0"
-description = "Add your description here"
+description = ""
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-  "ml-service-database",
-  "ml-service-database-repository",
-  # "ml-service-common"
-
+    "users",
+    "wallet",
+    "model",
+    "database",
+    "database-repository",
+    "typer>=0.12",
 ]
 
-[tool.uv.source]
-ml-service-database = { path = "../database", editable = true }
-ml-service-database-repository = { path = "../database_repository", editable = true }
-# ml-service-common = { path = "../common", editable = true }
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.wheel]
+packages = ["ml_service"]
+
+[tool.uv.sources]
+users = { workspace = true }
+wallet = { workspace = true }
+model = { workspace = true }
+database = { workspace = true }
+database-repository = { workspace = true }

@@ -4,19 +4,17 @@ version = "0.1.0"
 description = ""
 authors = [{ name = "Yehor Ivanov", email = "ivanov.e.s@my.mgimo.ru" }]
 requires-python = ">=3.14"
-readme = "README.md"
+# readme = "README.md"
 dependencies = [
-    "markitdown>=0.1.5",
     "ml_service",
-    # "pydantic-extra-types[all]>=2.10.5,<3",
 ]
 
 [dependency-groups]
 dev = [
     "pylint>=3.0.0,<4",
     "isort>=5.12.0,<6",
-    # "pytest>=7.4.2,<8",
-    # "pytest-asyncio>=0.21.1,<0.22",
+    "pytest>=7.4.2,<8",
+    "pytest-asyncio>=0.21.1,<0.22",
 ]
 
 [tool.uv]
@@ -31,6 +29,9 @@ members = [
     "database",
     "database_repository",
     "common",
+    "users",
+    "wallet",
+    "model",
 ]
 
 [build-system]
