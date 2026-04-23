@@ -1,3 +1,4 @@
+from ml_service_common.sqlalchemy.service import Service
 from sqlalchemy import select
 
 from database_repository.models import TransactionORM, TransactionTypeORM, UserORM, WalletORM
@@ -6,7 +7,6 @@ from database_repository.repositories._mappers import (
     to_domain_user,
     to_domain_wallet,
 )
-from ml_service_common.sqlalchemy.service import Service
 from wallet.domains.transaction import DebitTransaction, DepositTransaction, Transaction
 from wallet.domains.wallet import Wallet
 from wallet.interfaces.repositories import BalanceRepository, TransactionRepository

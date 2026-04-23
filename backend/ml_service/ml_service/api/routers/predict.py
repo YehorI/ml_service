@@ -1,13 +1,12 @@
 from fastapi import APIRouter, Depends
+from ml_service_common.sqlalchemy.service import Service
 
 from database_repository.repositories import SqlAlchemyBalanceRepository
 from ml_service.api.deps import db_transaction, get_current_user, get_task_service
 from ml_service.api.schemas import PredictRequest, PredictResponse
-from ml_service_common.sqlalchemy.service import Service
 from model.services.task_service import TaskService
 from users.domains.user import User
 from wallet.domains.wallet import Wallet
-
 
 router = APIRouter()
 

@@ -1,8 +1,8 @@
+from ml_service_common.sqlalchemy.service import Service
 from sqlalchemy import select
 
 from database_repository.models import UserORM, UserRoleORM, WalletORM
 from database_repository.repositories._mappers import to_domain_user
-from ml_service_common.sqlalchemy.service import Service
 from users.domains.user import AdminUser, User
 from users.interfaces.repositories import UserRepository
 

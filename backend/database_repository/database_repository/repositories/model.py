@@ -1,3 +1,4 @@
+from ml_service_common.sqlalchemy.service import Service
 from sqlalchemy import select
 
 from database_repository.models import MLModelORM, MLTaskORM, PredictionResultORM, UserORM
@@ -7,7 +8,6 @@ from database_repository.repositories._mappers import (
     to_domain_task,
     to_domain_user,
 )
-from ml_service_common.sqlalchemy.service import Service
 from model.domains.stored_model import StoredMLModel
 from model.domains.task import MLTask, PredictionResult
 from model.interfaces.repositories import (

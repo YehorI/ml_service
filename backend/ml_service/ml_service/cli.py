@@ -1,7 +1,7 @@
 import typer
+import uvicorn
 
 from database.cli import get_cli as database_get_cli
-import uvicorn
 
 
 def get_cli() -> typer.Typer:

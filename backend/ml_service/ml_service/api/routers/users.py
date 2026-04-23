@@ -4,7 +4,6 @@ from ml_service.api.deps import get_current_user
 from ml_service.api.schemas import UserPublic
 from users.domains.user import User
 
-
 router = APIRouter()
 
 
