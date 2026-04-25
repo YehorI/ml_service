@@ -1,7 +1,6 @@
 import pytest
 from sqlalchemy import func, select
 
-from database_repository.service import Service as DatabaseService
 from database_repository.models import (
     MLModelORM,
     MLTaskORM,
@@ -13,6 +12,7 @@ from database_repository.models import (
     WalletORM,
 )
 from database_repository.models.task import TaskStatusORM
+from database_repository.service import Service as DatabaseService
 
 
 async def _count(service: DatabaseService, model) -> int:

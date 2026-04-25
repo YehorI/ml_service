@@ -5,8 +5,8 @@ from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
 
 import database_repository.models  # noqa: F401
-from database_repository.models.base import Base
 from database.settings import get_settings
+from database_repository.models.base import Base
 
 config = context.config
 

@@ -1,9 +1,9 @@
-PROD_COMPOSE  := docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml
+PROD_COMPOSE := docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.prod.yml
 STAGE_COMPOSE := docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.stage.yml
-FIXTURE       ?= database/database/fixtures/autotests.yaml
+FIXTURE ?= database/database/fixtures/autotests.yaml
 
 .PHONY: \
-	prod-up prod-down prod-migrate prod-downgrade prod-revision \
+	build prod-up prod-down prod-migrate prod-downgrade prod-revision \
 	stage-up stage-down stage-migrate stage-downgrade stage-revision stage-fixtures
 
 prod-up:
@@ -23,11 +23,16 @@ prod-downgrade:
 prod-revision:
 	$(PROD_COMPOSE) run --rm backend database revision "$(MSG)"
 
+stage-build:
+	$(STAGE_COMPOSE) build backend
+
 stage-up:
 	$(STAGE_COMPOSE) up -d --wait postgres rabbitmq
 	$(STAGE_COMPOSE) run --rm backend database migrate
 	$(STAGE_COMPOSE) run --rm backend database loadfixtures "$(FIXTURE)"
 	$(STAGE_COMPOSE) up -d --remove-orphans
+
+stage-reup: stage-down stage-build stage-up
 
 stage-down:
 	$(STAGE_COMPOSE) down
