@@ -1,5 +1,5 @@
-from users.domains.user import User
-from users.interfaces.repositories import UserRepository
+from ml_service_users.domains.user import User
+from ml_service_users.interfaces.repositories import UserRepository
 
 
 class UserAlreadyExistsError(Exception):

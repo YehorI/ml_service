@@ -1,7 +1,7 @@
-from users.domains.user import User
-from wallet.domains.transaction import DebitTransaction, DepositTransaction
-from wallet.domains.wallet import Wallet
-from wallet.interfaces.repositories import BalanceRepository, TransactionRepository
+from ml_service_users.domains.user import User
+from ml_service_wallet.domains.transaction import DebitTransaction, DepositTransaction
+from ml_service_wallet.domains.wallet import Wallet
+from ml_service_wallet.interfaces.repositories import BalanceRepository, TransactionRepository
 
 
 class InsufficientFundsError(Exception):

@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
 
-from users.domains.user import User
-from wallet.domains.wallet import Wallet
+from ml_service_users.domains.user import User
+from ml_service_wallet.domains.wallet import Wallet
 
 
 class TransactionType(Enum):

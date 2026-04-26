@@ -14,9 +14,9 @@ from database_repository.repositories import (
     SqlAlchemyUserRepository,
 )
 from ml_service.api.security import hash_password
-from model.services.task_service import TaskService
-from users.services.user_service import UserService
-from wallet.services.wallet_service import WalletService
+from ml_service_model.services.task_service import TaskService
+from ml_service_users.services.user_service import UserService
+from ml_service_wallet.services.wallet_service import WalletService
 
 _service: Service | None = None
 

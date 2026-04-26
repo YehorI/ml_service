@@ -1,10 +1,10 @@
-from wallet.domains.transaction import (
+from ml_service_wallet.domains.transaction import (
     DebitTransaction,
     DepositTransaction,
     Transaction,
     TransactionType,
 )
-from wallet.domains.wallet import Wallet
+from ml_service_wallet.domains.wallet import Wallet
 
 __all__ = [
     "DebitTransaction",

@@ -8,9 +8,9 @@ from database_repository.repositories._mappers import (
     to_domain_task,
     to_domain_user,
 )
-from model.domains.stored_model import StoredMLModel
-from model.domains.task import MLTask, PredictionResult
-from model.interfaces.repositories import (
+from ml_service_model.domains.stored_model import StoredMLModel
+from ml_service_model.domains.task import MLTask, PredictionResult
+from ml_service_model.interfaces.repositories import (
     MLModelRepository,
     MLTaskRepository,
     PredictionResultRepository,

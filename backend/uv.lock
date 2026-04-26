@@ -12,10 +12,10 @@ members = [
     "database-repository",
     "ml-service",
     "ml-service-common",
-    "model",
+    "ml-service-model",
+    "ml-service-users",
+    "ml-service-wallet",
     "service",
-    "users",
-    "wallet",
 ]
 
 [[package]]
@@ -343,11 +343,11 @@ dependencies = [
     { name = "database-repository" },
     { name = "email-validator" },
     { name = "fastapi" },
-    { name = "model" },
+    { name = "ml-service-model" },
+    { name = "ml-service-users" },
+    { name = "ml-service-wallet" },
     { name = "typer" },
-    { name = "users" },
     { name = "uvicorn" },
-    { name = "wallet" },
 ]
 
 [package.metadata]
@@ -356,11 +356,11 @@ requires-dist = [
     { name = "database-repository", editable = "database_repository" },
     { name = "email-validator", specifier = ">=2.2" },
     { name = "fastapi", specifier = ">=0.115" },
-    { name = "model", editable = "model" },
+    { name = "ml-service-model", editable = "model" },
+    { name = "ml-service-users", editable = "users" },
+    { name = "ml-service-wallet", editable = "wallet" },
     { name = "typer", specifier = ">=0.12" },
-    { name = "users", editable = "users" },
     { name = "uvicorn", specifier = ">=0.30" },
-    { name = "wallet", editable = "wallet" },
 ]
 
 [[package]]
@@ -369,19 +369,35 @@ version = "0.1.0"
 source = { editable = "common" }
 
 [[package]]
-name = "model"
+name = "ml-service-model"
 version = "0.1.0"
 source = { editable = "model" }
 dependencies = [
-    { name = "users" },
-    { name = "wallet" },
+    { name = "ml-service-users" },
+    { name = "ml-service-wallet" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "users", editable = "users" },
-    { name = "wallet", editable = "wallet" },
+    { name = "ml-service-users", editable = "users" },
+    { name = "ml-service-wallet", editable = "wallet" },
 ]
+
+[[package]]
+name = "ml-service-users"
+version = "0.1.0"
+source = { editable = "users" }
+
+[[package]]
+name = "ml-service-wallet"
+version = "0.1.0"
+source = { editable = "wallet" }
+dependencies = [
+    { name = "ml-service-users" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "ml-service-users", editable = "users" }]
 
 [[package]]
 name = "packaging"
@@ -679,11 +695,6 @@ wheels = [
 ]
 
 [[package]]
-name = "users"
-version = "0.1.0"
-source = { editable = "users" }
-
-[[package]]
 name = "uvicorn"
 version = "0.46.0"
 source = { registry = "https://pypi.org/simple" }
@@ -695,14 +706,3 @@ sdist = { url = "https://files.pythonhosted.org/packages/1f/93/041fca8274050e40e
 wheels = [
     { url = "https://files.pythonhosted.org/packages/31/a3/5b1562db76a5a488274b2332a97199b32d0442aca0ed193697fd47786316/uvicorn-0.46.0-py3-none-any.whl", hash = "sha256:bbebbcbed972d162afca128605223022bedd345b7bc7855ce66deb31487a9048", size = 70926, upload-time = "2026-04-23T07:15:58.355Z" },
 ]
-
-[[package]]
-name = "wallet"
-version = "0.1.0"
-source = { editable = "wallet" }
-dependencies = [
-    { name = "users" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "users", editable = "users" }]

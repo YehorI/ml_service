@@ -4,9 +4,9 @@ from ml_service_common.sqlalchemy.service import Service
 from database_repository.repositories import SqlAlchemyBalanceRepository
 from ml_service.api.deps import db_transaction, get_current_user, get_task_service
 from ml_service.api.schemas import PredictRequest, PredictResponse
-from model.services.task_service import TaskService
-from users.domains.user import User
-from wallet.domains.wallet import Wallet
+from ml_service_model.services.task_service import TaskService
+from ml_service_users.domains.user import User
+from ml_service_wallet.domains.wallet import Wallet
 
 router = APIRouter()
 

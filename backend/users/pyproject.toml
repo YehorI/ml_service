@@ -1,5 +1,5 @@
 [project]
-name = "users"
+name = "ml_service_users"
 version = "0.1.0"
 description = ""
 readme = "README.md"
@@ -11,4 +11,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["users"]
+packages = ["ml_service_users"]

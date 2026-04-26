@@ -1,12 +1,12 @@
-from wallet.domains.transaction import (
+from ml_service_wallet.domains.transaction import (
     DebitTransaction,
     DepositTransaction,
     Transaction,
     TransactionType,
 )
-from wallet.domains.wallet import Wallet
-from wallet.interfaces.repositories import BalanceRepository, TransactionRepository
-from wallet.services.wallet_service import WalletService
+from ml_service_wallet.domains.wallet import Wallet
+from ml_service_wallet.interfaces.repositories import BalanceRepository, TransactionRepository
+from ml_service_wallet.services.wallet_service import WalletService
 
 __all__ = [
     "BalanceRepository",

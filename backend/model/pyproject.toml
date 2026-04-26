@@ -1,11 +1,11 @@
 [project]
-name = "model"
+name = "ml_service_model"
 version = "0.1.0"
 description = ""
 requires-python = ">=3.14"
 dependencies = [
-    "users",
-    "wallet",
+    "ml_service_users",
+    "ml_service_wallet",
 ]
 
 [build-system]
@@ -13,8 +13,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["model"]
+packages = ["ml_service_model"]
 
 [tool.uv.sources]
-users = { workspace = true }
-wallet = { workspace = true }
+ml_service_users = { workspace = true }
+ml_service_wallet = { workspace = true }

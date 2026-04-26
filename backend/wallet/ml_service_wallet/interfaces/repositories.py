@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from wallet.domains.transaction import Transaction
-from wallet.domains.wallet import Wallet
+from ml_service_wallet.domains.transaction import Transaction
+from ml_service_wallet.domains.wallet import Wallet
 
 
 class BalanceRepository(ABC):

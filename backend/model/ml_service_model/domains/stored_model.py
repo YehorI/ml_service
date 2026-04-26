@@ -1,6 +1,6 @@
 from typing import Any
 
-from model.domains.ml_model import MLModel
+from ml_service_model.domains.ml_model import MLModel
 
 
 class StoredMLModel(MLModel):
@@ -10,7 +10,7 @@ class StoredMLModel(MLModel):
 
     def predict(self, input_data: Any) -> Any:
         return {
-            "model": {"id": self.model_id, "name": self.name},
+            "ml_service_model": {"id": self.model_id, "name": self.name},
             "input": input_data,
         }
 

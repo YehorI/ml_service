@@ -8,10 +8,10 @@ from database_repository.models import (
     UserRoleORM,
     WalletORM,
 )
-from model.domains.task import MLTask, PredictionResult, TaskStatus
-from users.domains.user import AdminUser, User, UserRole
-from wallet.domains.transaction import DebitTransaction, DepositTransaction, Transaction
-from wallet.domains.wallet import Wallet
+from ml_service_model.domains.task import MLTask, PredictionResult, TaskStatus
+from ml_service_users.domains.user import AdminUser, User, UserRole
+from ml_service_wallet.domains.transaction import DebitTransaction, DepositTransaction, Transaction
+from ml_service_wallet.domains.wallet import Wallet
 
 
 def to_domain_user(orm: UserORM) -> User:

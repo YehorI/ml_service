@@ -1,11 +1,11 @@
-from model.domains.ml_model import MLModel
-from model.domains.task import MLTask, PredictionResult, TaskStatus
-from model.interfaces.repositories import (
+from ml_service_model.domains.ml_model import MLModel
+from ml_service_model.domains.task import MLTask, PredictionResult, TaskStatus
+from ml_service_model.interfaces.repositories import (
     MLModelRepository,
     MLTaskRepository,
     PredictionResultRepository,
 )
-from model.services.task_service import TaskService
+from ml_service_model.services.task_service import TaskService
 
 __all__ = [
     "MLModel",

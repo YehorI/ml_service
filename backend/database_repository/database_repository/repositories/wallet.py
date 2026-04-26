@@ -7,9 +7,9 @@ from database_repository.repositories._mappers import (
     to_domain_user,
     to_domain_wallet,
 )
-from wallet.domains.transaction import DebitTransaction, DepositTransaction, Transaction
-from wallet.domains.wallet import Wallet
-from wallet.interfaces.repositories import BalanceRepository, TransactionRepository
+from ml_service_wallet.domains.transaction import DebitTransaction, DepositTransaction, Transaction
+from ml_service_wallet.domains.wallet import Wallet
+from ml_service_wallet.interfaces.repositories import BalanceRepository, TransactionRepository
 
 
 class SqlAlchemyBalanceRepository(BalanceRepository):

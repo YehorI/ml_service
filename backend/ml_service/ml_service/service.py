@@ -1,6 +1,6 @@
-from model.services.task_service import TaskService
-from users.services.user_service import UserService
-from wallet.services.wallet_service import WalletService
+from ml_service_model.services.task_service import TaskService
+from ml_service_users.services.user_service import UserService
+from ml_service_wallet.services.wallet_service import WalletService
 
 
 class MLService:

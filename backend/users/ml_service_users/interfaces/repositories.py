@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from users.domains.user import User
+from ml_service_users.domains.user import User
 
 
 class UserRepository(ABC):

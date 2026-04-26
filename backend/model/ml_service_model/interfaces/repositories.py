@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from model.domains.ml_model import MLModel
-from model.domains.task import MLTask, PredictionResult
+from ml_service_model.domains.ml_model import MLModel
+from ml_service_model.domains.task import MLTask, PredictionResult
 
 
 class MLModelRepository(ABC):

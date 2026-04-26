@@ -3,16 +3,16 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from users.domains.user import User
-from users.services.user_service import (
+from ml_service_users.domains.user import User
+from ml_service_users.services.user_service import (
     InvalidPasswordError,
     UserAlreadyExistsError,
     UserNotFoundError,
     UserService,
 )
-from wallet.domains.transaction import DebitTransaction, DepositTransaction
-from wallet.domains.wallet import Wallet
-from wallet.services.wallet_service import InsufficientFundsError, WalletService
+from ml_service_wallet.domains.transaction import DebitTransaction, DepositTransaction
+from ml_service_wallet.domains.wallet import Wallet
+from ml_service_wallet.services.wallet_service import InsufficientFundsError, WalletService
 
 
 def _make_user(user_id: int = 1, username: str = "alice", password_hash: str = "hash123") -> User:

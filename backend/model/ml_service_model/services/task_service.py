@@ -1,15 +1,15 @@
 from datetime import datetime
 from typing import Any
 
-from model.domains.task import MLTask, PredictionResult, TaskStatus
-from model.interfaces.repositories import (
+from ml_service_model.domains.task import MLTask, PredictionResult, TaskStatus
+from ml_service_model.interfaces.repositories import (
     MLModelRepository,
     MLTaskRepository,
     PredictionResultRepository,
 )
-from users.domains.user import User
-from wallet.domains.wallet import Wallet
-from wallet.services.wallet_service import WalletService
+from ml_service_users.domains.user import User
+from ml_service_wallet.domains.wallet import Wallet
+from ml_service_wallet.services.wallet_service import WalletService
 
 
 class ModelNotFoundError(Exception):
