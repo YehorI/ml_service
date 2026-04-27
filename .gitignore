@@ -14,3 +14,4 @@ wheels/
 .env
 *.mx
 .vscode
+.pytest_cache
