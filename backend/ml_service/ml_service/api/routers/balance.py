@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
-from ml_service_common.sqlalchemy.service import Service
 
-from database_repository.repositories import SqlAlchemyBalanceRepository
+from database_repository.service import Service
 from ml_service.api.deps import db_transaction, get_current_user, get_wallet_service
 from ml_service.api.schemas import BalanceResponse, DepositRequest
 from ml_service_users.domains.user import User
+from ml_service_wallet.database.repositories import SqlAlchemyAltBalanceRepository
 from ml_service_wallet.domains.wallet import Wallet
 from ml_service_wallet.services.wallet_service import WalletService
 
@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 async def _get_wallet(service: Service, user: User) -> Wallet:
-    repo = SqlAlchemyBalanceRepository(service)
+    repo = SqlAlchemyAltBalanceRepository(service)
     wallet = await repo.get_by_user_id(user.user_id)
     if wallet is None:
         wallet = await repo.save(Wallet(user_id=user.user_id, amount=0.0))

@@ -5,12 +5,12 @@ from database_repository.models.user import UserORM, UserRoleORM
 from database_repository.models.wallet import WalletORM
 
 __all__ = [
-    "MLModelORM",
-    "MLTaskORM",
-    "PredictionResultORM",
-    "TransactionORM",
-    "TransactionTypeORM",
     "UserORM",
     "UserRoleORM",
     "WalletORM",
+    "TransactionORM",
+    "TransactionTypeORM",
+    "MLModelORM",
+    "MLTaskORM",
+    "PredictionResultORM",
 ]

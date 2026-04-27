@@ -6,6 +6,7 @@ requires-python = ">=3.14"
 dependencies = [
     "ml_service_users",
     "ml_service_wallet",
+    "database-repository",
 ]
 
 [build-system]
@@ -18,3 +19,4 @@ packages = ["ml_service_model"]
 [tool.uv.sources]
 ml_service_users = { workspace = true }
 ml_service_wallet = { workspace = true }
+database-repository = { workspace = true }

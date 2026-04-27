@@ -6,10 +6,3 @@ from ml_service_wallet.domains.transaction import (
 )
 from ml_service_wallet.domains.wallet import Wallet
 
-__all__ = [
-    "DebitTransaction",
-    "DepositTransaction",
-    "Transaction",
-    "TransactionType",
-    "Wallet",
-]

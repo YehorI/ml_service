@@ -1,13 +1,11 @@
 from fastapi import APIRouter, Depends
-from ml_service_common.sqlalchemy.service import Service
 
-from database_repository.repositories import (
-    SqlAlchemyMLTaskRepository,
-    SqlAlchemyTransactionRepository,
-)
+from database_repository.service import Service
 from ml_service.api.deps import db_transaction, get_current_user
 from ml_service.api.schemas import TaskHistoryItem, TransactionItem
+from ml_service_model.database.repositories import SqlAlchemyAltMLTaskRepository
 from ml_service_users.domains.user import User
+from ml_service_wallet.database.repositories import SqlAlchemyAltTransactionRepository
 from ml_service_wallet.domains.transaction import DebitTransaction, DepositTransaction, Transaction
 
 router = APIRouter()
@@ -30,7 +28,7 @@ async def transactions(
     user: User = Depends(get_current_user),
     service: Service = Depends(db_transaction),
 ):
-    repo = SqlAlchemyTransactionRepository(service)
+    repo = SqlAlchemyAltTransactionRepository(service)
     items = await repo.list_by_user(user.user_id)
     return [_tx_to_item(t) for t in items]
 
@@ -40,7 +38,7 @@ async def tasks(
     user: User = Depends(get_current_user),
     service: Service = Depends(db_transaction),
 ):
-    repo = SqlAlchemyMLTaskRepository(service)
+    repo = SqlAlchemyAltMLTaskRepository(service)
     tasks = await repo.list_by_user(user.user_id)
     return [
         TaskHistoryItem(

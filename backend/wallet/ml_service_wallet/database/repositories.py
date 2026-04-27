@@ -1,18 +1,60 @@
-from ml_service_common.sqlalchemy.service import Service
 from sqlalchemy import select
 
-from database_repository.models import TransactionORM, TransactionTypeORM, UserORM, WalletORM
-from database_repository.repositories._mappers import (
-    to_domain_transaction,
-    to_domain_user,
-    to_domain_wallet,
-)
+from database_repository.models import TransactionORM, TransactionTypeORM, UserORM, UserRoleORM, WalletORM
+from ml_service_wallet.database.service import Service
+from ml_service_users.domains.user import AdminUser, User, UserRole
 from ml_service_wallet.domains.transaction import DebitTransaction, DepositTransaction, Transaction
 from ml_service_wallet.domains.wallet import Wallet
 from ml_service_wallet.interfaces.repositories import BalanceRepository, TransactionRepository
 
 
-class SqlAlchemyBalanceRepository(BalanceRepository):
+def to_domain_user(orm: UserORM) -> User:
+    if orm.role == UserRoleORM.ADMIN:
+        return AdminUser(
+            user_id=orm.id,
+            username=orm.username,
+            email=orm.email,
+            password_hash=orm.password_hash,
+            created_at=orm.created_at,
+        )
+    return User(
+        user_id=orm.id,
+        username=orm.username,
+        email=orm.email,
+        password_hash=orm.password_hash,
+        role=UserRole.USER,
+        created_at=orm.created_at,
+    )
+
+
+def to_domain_wallet(orm: WalletORM) -> Wallet:
+    return Wallet(user_id=orm.user_id, amount=float(orm.amount))
+
+
+def to_domain_transaction(orm: TransactionORM, user: User, wallet: Wallet) -> Transaction:
+    if orm.transaction_type == TransactionTypeORM.DEPOSIT:
+        tx = DepositTransaction(
+            transaction_id=orm.id,
+            user=user,
+            wallet=wallet,
+            amount=float(orm.amount),
+            created_at=orm.created_at,
+        )
+    else:
+        tx = DebitTransaction(
+            transaction_id=orm.id,
+            user=user,
+            wallet=wallet,
+            amount=float(orm.amount),
+            ml_task_id=int(orm.ml_task_id or 0),
+            created_at=orm.created_at,
+        )
+    if orm.is_applied:
+        tx._is_applied = True
+    return tx
+
+
+class SqlAlchemyAltBalanceRepository(BalanceRepository):
     def __init__(self, service: Service) -> None:
         self._service = service
 
@@ -36,7 +78,7 @@ class SqlAlchemyBalanceRepository(BalanceRepository):
         return to_domain_wallet(orm)
 
 
-class SqlAlchemyTransactionRepository(TransactionRepository):
+class SqlAlchemyAltTransactionRepository(TransactionRepository):
     def __init__(self, service: Service) -> None:
         self._service = service
 
@@ -100,4 +142,3 @@ class SqlAlchemyTransactionRepository(TransactionRepository):
         self._service.session.add(orm)
         await self._service.session.flush()
         return await self.get_by_id(int(orm.id))
-

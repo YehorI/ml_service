@@ -1,3 +1,2 @@
-from database_repository.service import Service, get_service
+from database_repository.service import DatabaseService, Service, get_service
 
-__all__ = ["Service", "get_service"]

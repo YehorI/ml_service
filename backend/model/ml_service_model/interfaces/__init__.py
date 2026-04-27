@@ -4,4 +4,3 @@ from ml_service_model.interfaces.repositories import (
     PredictionResultRepository,
 )
 
-__all__ = ["MLModelRepository", "MLTaskRepository", "PredictionResultRepository"]

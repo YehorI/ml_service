@@ -1,23 +1,86 @@
-from ml_service_common.sqlalchemy.service import Service
 from sqlalchemy import select
 
-from database_repository.models import MLModelORM, MLTaskORM, PredictionResultORM, UserORM
+from database_repository.models import MLModelORM, MLTaskORM, PredictionResultORM, UserORM, UserRoleORM
 from database_repository.models.task import TaskStatusORM
-from database_repository.repositories._mappers import (
-    to_domain_prediction_result,
-    to_domain_task,
-    to_domain_user,
-)
+from ml_service_model.database.service import Service
 from ml_service_model.domains.stored_model import StoredMLModel
-from ml_service_model.domains.task import MLTask, PredictionResult
+from ml_service_model.domains.task import MLTask, PredictionResult, TaskStatus
 from ml_service_model.interfaces.repositories import (
     MLModelRepository,
     MLTaskRepository,
     PredictionResultRepository,
 )
+from ml_service_users.domains.user import AdminUser, User, UserRole
 
 
-class SqlAlchemyMLModelRepository(MLModelRepository):
+def to_domain_user(orm: UserORM) -> User:
+    if orm.role == UserRoleORM.ADMIN:
+        return AdminUser(
+            user_id=orm.id,
+            username=orm.username,
+            email=orm.email,
+            password_hash=orm.password_hash,
+            created_at=orm.created_at,
+        )
+    return User(
+        user_id=orm.id,
+        username=orm.username,
+        email=orm.email,
+        password_hash=orm.password_hash,
+        role=UserRole.USER,
+        created_at=orm.created_at,
+    )
+
+
+class _PseudoModel:
+    def __init__(self, orm: MLModelORM) -> None:
+        self._orm = orm
+
+    @property
+    def model_id(self) -> int:
+        return self._orm.id
+
+    @property
+    def name(self) -> str:
+        return self._orm.name
+
+    @property
+    def description(self) -> str:
+        return self._orm.description
+
+    @property
+    def cost_per_request(self) -> float:
+        return float(self._orm.cost_per_request)
+
+    @property
+    def is_active(self) -> bool:
+        return bool(self._orm.is_active)
+
+
+def to_domain_task(orm: MLTaskORM, user: User, model_orm: MLModelORM) -> MLTask:
+    task = MLTask(
+        task_id=orm.id,
+        user=user,
+        model=_PseudoModel(model_orm),
+        input_data=orm.input_data,
+        created_at=orm.created_at,
+    )
+    task._status = TaskStatus(orm.status.value)
+    task._completed_at = orm.completed_at
+    return task
+
+
+def to_domain_prediction_result(orm: PredictionResultORM) -> PredictionResult:
+    return PredictionResult(
+        result_id=orm.id,
+        task_id=orm.task_id,
+        output_data=orm.output_data,
+        credits_charged=float(orm.credits_charged),
+        created_at=orm.created_at,
+    )
+
+
+class SqlAlchemyAltMLModelRepository(MLModelRepository):
     def __init__(self, service: Service) -> None:
         self._service = service
 
@@ -68,7 +131,7 @@ class SqlAlchemyMLModelRepository(MLModelRepository):
         )
 
 
-class SqlAlchemyMLTaskRepository(MLTaskRepository):
+class SqlAlchemyAltMLTaskRepository(MLTaskRepository):
     def __init__(self, service: Service) -> None:
         self._service = service
 
@@ -126,7 +189,7 @@ class SqlAlchemyMLTaskRepository(MLTaskRepository):
         return await self.get_by_id(int(orm.id))
 
 
-class SqlAlchemyPredictionResultRepository(PredictionResultRepository):
+class SqlAlchemyAltPredictionResultRepository(PredictionResultRepository):
     def __init__(self, service: Service) -> None:
         self._service = service
 
@@ -148,4 +211,3 @@ class SqlAlchemyPredictionResultRepository(PredictionResultRepository):
         self._service.session.add(orm)
         await self._service.session.flush()
         return to_domain_prediction_result(orm)
-

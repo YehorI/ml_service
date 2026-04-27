@@ -1,13 +1,31 @@
-from ml_service_common.sqlalchemy.service import Service
 from sqlalchemy import select
 
 from database_repository.models import UserORM, UserRoleORM, WalletORM
-from database_repository.repositories._mappers import to_domain_user
-from ml_service_users.domains.user import AdminUser, User
+from ml_service_users.database.service import Service
+from ml_service_users.domains.user import AdminUser, User, UserRole
 from ml_service_users.interfaces.repositories import UserRepository
 
 
-class SqlAlchemyUserRepository(UserRepository):
+def to_domain_user(orm: UserORM) -> User:
+    if orm.role == UserRoleORM.ADMIN:
+        return AdminUser(
+            user_id=orm.id,
+            username=orm.username,
+            email=orm.email,
+            password_hash=orm.password_hash,
+            created_at=orm.created_at,
+        )
+    return User(
+        user_id=orm.id,
+        username=orm.username,
+        email=orm.email,
+        password_hash=orm.password_hash,
+        role=UserRole.USER,
+        created_at=orm.created_at,
+    )
+
+
+class SqlAlchemyAltUserRepository(UserRepository):
     def __init__(self, service: Service) -> None:
         self._service = service
 
@@ -48,4 +66,3 @@ class SqlAlchemyUserRepository(UserRepository):
         orm.email = user.email
         orm.password_hash = user.password_hash
         return to_domain_user(orm)
-
