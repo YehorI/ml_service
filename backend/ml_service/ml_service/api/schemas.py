@@ -29,6 +29,9 @@ class LoginRequest(BaseModel):
 
 class LoginResponse(BaseModel):
     user: UserPublic
+    access_token: str
+    token_type: str = "bearer"
+    expires_in: int
 
 
 class BalanceResponse(BaseModel):
@@ -67,4 +70,35 @@ class TaskHistoryItem(BaseModel):
     status: str
     created_at: datetime
     completed_at: datetime | None
+
+
+class ModelItem(BaseModel):
+    model_id: int
+    name: str
+    description: str
+    cost_per_request: float
+    is_active: bool
+
+
+class BatchPredictRequest(BaseModel):
+    model_id: int = Field(gt=0)
+    items: list[Any] = Field(min_length=1)
+
+
+class BatchPredictAccepted(BaseModel):
+    index: int
+    task_id: int
+    output_data: dict[str, Any]
+    credits_charged: float
+
+
+class BatchPredictRejected(BaseModel):
+    index: int
+    errors: list[str]
+
+
+class BatchPredictResponse(BaseModel):
+    accepted: list[BatchPredictAccepted]
+    rejected: list[BatchPredictRejected]
+    total_charged: float
 

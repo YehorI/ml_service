@@ -39,3 +39,9 @@ class UserService:
         if not user.verify_password(password_hash):
             raise InvalidPasswordError("Invalid password")
         return user
+
+    async def get_by_id(self, user_id: int) -> User:
+        user = await self._user_repository.get_by_id(user_id)
+        if user is None:
+            raise UserNotFoundError(f"User id={user_id} not found")
+        return user
