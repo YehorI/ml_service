@@ -1,7 +1,12 @@
 from ml_service_common.sqlalchemy_alt.service import SQLAlchemyService
-from ml_service_common.sqlalchemy_alt.settings import SQLAlchemySettings
+
+from ml_service_model.database.settings import Settings
 
 
 class Service(SQLAlchemyService):
-    def __init__(self, settings: SQLAlchemySettings | None = None) -> None:
-        super().__init__(settings=settings or SQLAlchemySettings(), logger=None)
+    def __init__(self, settings: Settings | None = None) -> None:
+        super().__init__(settings=settings or Settings(), logger=None)
+
+
+def get_service(settings: Settings | None = None) -> Service:
+    return Service(settings=settings)
