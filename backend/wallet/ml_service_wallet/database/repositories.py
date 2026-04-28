@@ -44,6 +44,7 @@ def to_domain_transaction(orm: TransactionORM, user: User, wallet: Wallet) -> Tr
             user=user,
             wallet=wallet,
             amount=float(orm.amount),
+            ml_task_id=int(orm.ml_task_id) if orm.ml_task_id is not None else None,
             created_at=orm.created_at,
         )
     else:

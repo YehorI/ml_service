@@ -54,3 +54,28 @@ class WalletService:
         await self._balance_repository.update(wallet)
         saved = await self._transaction_repository.save(transaction)
         return saved
+
+    async def refund_for_task(
+        self,
+        user: User,
+        wallet: Wallet,
+        task_id: int,
+        amount: float,
+    ) -> DepositTransaction:
+        """Reverse a prior charge when an async task ends up FAILED.
+
+        Records a deposit linked to the task so it shows up alongside the
+        original debit in the user's transaction history.
+        """
+        transaction = DepositTransaction(
+            transaction_id=0,
+            user=user,
+            wallet=wallet,
+            amount=amount,
+            ml_task_id=task_id,
+        )
+        transaction.apply()
+
+        await self._balance_repository.update(wallet)
+        saved = await self._transaction_repository.save(transaction)
+        return saved
