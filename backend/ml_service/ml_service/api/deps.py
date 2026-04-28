@@ -2,10 +2,6 @@ from collections.abc import AsyncGenerator
 
 from fastapi import Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-
-from database_repository import get_service
-from database_repository.service import Service
-from ml_service.api.security import hash_password
 from ml_service_model.database.repositories import (
     SqlAlchemyAltMLModelRepository,
     SqlAlchemyAltMLTaskRepository,
@@ -19,6 +15,10 @@ from ml_service_wallet.database.repositories import (
     SqlAlchemyAltTransactionRepository,
 )
 from ml_service_wallet.services.wallet_service import WalletService
+
+from database_repository import get_service
+from database_repository.service import Service
+from ml_service.api.security import hash_password
 
 _service: Service | None = None
 

@@ -16,13 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class PredictWorker:
-    """Async worker that consumes prediction tasks from RabbitMQ.
-
-    Acks only after successful processing so unacked messages return to the
-    queue if the worker crashes. Multiple worker replicas share the same queue
-    and RabbitMQ distributes messages round-robin.
-    """
-
     def __init__(
         self,
         settings: RabbitMQSettings,

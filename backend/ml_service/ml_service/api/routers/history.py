@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends
-
-from database_repository.service import Service
-from ml_service.api.deps import db_transaction, get_current_user
-from ml_service.api.schemas import TaskHistoryItem, TransactionItem
 from ml_service_model.database.repositories import SqlAlchemyAltMLTaskRepository
 from ml_service_users.domains.user import User
 from ml_service_wallet.database.repositories import SqlAlchemyAltTransactionRepository
 from ml_service_wallet.domains.transaction import DebitTransaction, DepositTransaction, Transaction
+
+from database_repository.service import Service
+from ml_service.api.deps import db_transaction, get_current_user
+from ml_service.api.schemas import TaskHistoryItem, TransactionItem
 
 router = APIRouter()
 

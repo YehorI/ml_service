@@ -1,7 +1,5 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from pydantic import ValidationError
-
 from ml_service_model.services.task_service import (
     InvalidInputDataError,
     ModelInactiveError,
@@ -13,6 +11,7 @@ from ml_service_users.services.user_service import (
     UserNotFoundError,
 )
 from ml_service_wallet.services.wallet_service import InsufficientFundsError
+from pydantic import ValidationError
 
 
 def _err(code: str, message: str, *, details: list[str] | None = None) -> dict:

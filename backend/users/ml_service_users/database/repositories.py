@@ -1,9 +1,9 @@
-from sqlalchemy import select
-
-from database_repository.models import UserORM, UserRoleORM, WalletORM
 from ml_service_users.database.service import Service
 from ml_service_users.domains.user import AdminUser, User, UserRole
 from ml_service_users.interfaces.repositories import UserRepository
+from sqlalchemy import select
+
+from database_repository.models import UserORM, UserRoleORM, WalletORM
 
 
 def to_domain_user(orm: UserORM) -> User:
