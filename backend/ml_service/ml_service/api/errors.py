@@ -5,7 +5,7 @@ from ml_service_model.services.task_service import (
     ModelInactiveError,
     ModelNotFoundError,
 )
-from ml_service_users.services.user_service import (
+from ml_service_users.api.rest.users.handlers import (
     InvalidPasswordError,
     UserAlreadyExistsError,
     UserNotFoundError,

@@ -6,9 +6,9 @@ from ml_service_model.interfaces.repositories import (
     MLTaskRepository,
     PredictionResultRepository,
 )
-from ml_service_users.domains.user import AdminUser, User, UserRole
 from sqlalchemy import select
 
+from database_repository.dto.users import AdminUser, User, UserRole
 from database_repository.models import (
     MLModelORM,
     MLTaskORM,

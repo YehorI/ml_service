@@ -8,8 +8,13 @@ from ml_service_model.database.repositories import (
     SqlAlchemyAltPredictionResultRepository,
 )
 from ml_service_model.services.task_service import TaskService
-from ml_service_users.database.repositories import SqlAlchemyAltUserRepository
-from ml_service_users.services.user_service import UserService
+from ml_service_users.api.rest.users.handlers import (
+    InvalidPasswordError,
+    UserNotFoundError,
+)
+from ml_service_users.database.service import Service as UserDatabaseService
+from ml_service_users.database.service import get_service as get_user_database
+from ml_service_users.utils import hash_password
 from ml_service_wallet.database.repositories import (
     SqlAlchemyAltBalanceRepository,
     SqlAlchemyAltTransactionRepository,
@@ -18,9 +23,9 @@ from ml_service_wallet.services.wallet_service import WalletService
 
 from database_repository import get_service
 from database_repository.service import Service
-from ml_service.api.security import hash_password
 
 _service: Service | None = None
+_users_database: UserDatabaseService | None = None
 
 
 def _get_service_singleton() -> Service:
@@ -30,17 +35,26 @@ def _get_service_singleton() -> Service:
     return _service
 
 
+def _get_users_database_singleton() -> UserDatabaseService:
+    global _users_database
+    if _users_database is None:
+        _users_database = get_user_database()
+    return _users_database
+
+
 async def db_transaction() -> AsyncGenerator[Service, None]:
     service = _get_service_singleton()
     async with service.transaction():
         yield service
 
 
+async def users_database() -> AsyncGenerator[UserDatabaseService, None]:
+    database = _get_users_database_singleton()
+    async with database.transaction():
+        yield database
+
+
 basic_auth = HTTPBasic(auto_error=True)
-
-
-async def get_user_service(service: Service = Depends(db_transaction)) -> UserService:
-    return UserService(user_repository=SqlAlchemyAltUserRepository(service))
 
 
 async def get_wallet_service(service: Service = Depends(db_transaction)) -> WalletService:
@@ -65,9 +79,11 @@ async def get_task_service(service: Service = Depends(db_transaction)) -> TaskSe
 
 async def get_current_user(
     credentials: HTTPBasicCredentials = Depends(basic_auth),
-    user_service: UserService = Depends(get_user_service),
+    database: UserDatabaseService = Depends(users_database),
 ):
-    # TODO JWT
-    password_hash = hash_password(credentials.password)
-    return await user_service.authenticate(credentials.username, password_hash)
-
+    user = await database.get_user_by_username(credentials.username)
+    if user is None:
+        raise UserNotFoundError(f"User {credentials.username!r} not found")
+    if not user.verify_password(hash_password(credentials.password)):
+        raise InvalidPasswordError("Invalid password")
+    return user

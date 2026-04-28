@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from ml_service_model.services.task_service import TaskService
-from ml_service_users.domains.user import User
 from ml_service_wallet.database.repositories import SqlAlchemyAltBalanceRepository
 from ml_service_wallet.domains.wallet import Wallet
 
+from database_repository.dto.users import User
 from database_repository.service import Service
 from ml_service.api.deps import db_transaction, get_current_user, get_task_service
 from ml_service.api.schemas import PredictRequest, PredictResponse

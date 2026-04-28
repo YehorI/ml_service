@@ -1,22 +1,22 @@
 from ml_service_model.services.task_service import TaskService
-from ml_service_users.services.user_service import UserService
+from ml_service_users.database.service import Service as UserDatabaseService
 from ml_service_wallet.services.wallet_service import WalletService
 
 
 class MLService:
     def __init__(
         self,
-        user_service: UserService,
+        users: UserDatabaseService,
         wallet_service: WalletService,
         task_service: TaskService,
     ) -> None:
-        self._user_service = user_service
+        self._users = users
         self._wallet_service = wallet_service
         self._task_service = task_service
 
     @property
-    def users(self) -> UserService:
-        return self._user_service
+    def users(self) -> UserDatabaseService:
+        return self._users
 
     @property
     def wallet(self) -> WalletService:

@@ -7,7 +7,7 @@ from ml_service_model.interfaces.repositories import (
     MLTaskRepository,
     PredictionResultRepository,
 )
-from ml_service_users.domains.user import User
+from database_repository.dto.users import User
 from ml_service_wallet.domains.wallet import Wallet
 from ml_service_wallet.services.wallet_service import WalletService
 

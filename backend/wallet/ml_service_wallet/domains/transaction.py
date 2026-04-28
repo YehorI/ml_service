@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
 
-from ml_service_users.domains.user import User
+from database_repository.dto.users import User
 from ml_service_wallet.domains.wallet import Wallet
 
 
