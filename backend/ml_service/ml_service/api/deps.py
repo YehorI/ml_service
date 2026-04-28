@@ -13,7 +13,6 @@ from ml_service_users.api.rest.users.handlers import (
     UserNotFoundError,
 )
 from ml_service_users.database.service import Service as UserDatabaseService
-from ml_service_users.database.service import get_service as get_user_database
 from ml_service_users.utils import hash_password
 from ml_service_wallet.database.repositories import (
     SqlAlchemyAltBalanceRepository,
@@ -23,9 +22,11 @@ from ml_service_wallet.services.wallet_service import WalletService
 
 from database_repository import get_service
 from database_repository.service import Service
+from ml_service.service import Service as MLService
+from ml_service.service import get_service as get_ml_service
 
 _service: Service | None = None
-_users_database: UserDatabaseService | None = None
+_ml_service: MLService | None = None
 
 
 def _get_service_singleton() -> Service:
@@ -35,11 +36,11 @@ def _get_service_singleton() -> Service:
     return _service
 
 
-def _get_users_database_singleton() -> UserDatabaseService:
-    global _users_database
-    if _users_database is None:
-        _users_database = get_user_database()
-    return _users_database
+def _get_ml_service_singleton() -> MLService:
+    global _ml_service
+    if _ml_service is None:
+        _ml_service = get_ml_service()
+    return _ml_service
 
 
 async def db_transaction() -> AsyncGenerator[Service, None]:
@@ -49,7 +50,7 @@ async def db_transaction() -> AsyncGenerator[Service, None]:
 
 
 async def users_database() -> AsyncGenerator[UserDatabaseService, None]:
-    database = _get_users_database_singleton()
+    database = _get_ml_service_singleton().users.database
     async with database.transaction():
         yield database
 
