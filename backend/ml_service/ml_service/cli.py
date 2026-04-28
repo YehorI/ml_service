@@ -1,7 +1,10 @@
+import asyncio
+
 import typer
 import uvicorn
 
 from database.cli import get_cli as database_get_cli
+from ml_service.messaging.worker import run_worker
 
 
 def get_cli() -> typer.Typer:
@@ -19,5 +22,10 @@ def get_cli() -> typer.Typer:
             host=host,
             port=port,
         )
+
+    @cli.command("worker")
+    def worker() -> None:
+        """Run a RabbitMQ consumer that processes prediction tasks."""
+        asyncio.run(run_worker())
 
     return cli
