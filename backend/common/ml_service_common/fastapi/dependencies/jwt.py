@@ -1,8 +1,8 @@
 import fastapi
-from collabry_common.fastapi.exceptions import HTTPNotAuthenticated
-from collabry_common.fastapi.utils import set_cookie
-from collabry_common.jwt import JWTData, JWTMethods
-from collabry_common.jwt.utils import extract_jwt_data_from_http_request
+from ml_service_common.fastapi.exceptions import HTTPNotAuthenticated
+from ml_service_common.fastapi.utils import set_cookie
+from ml_service_common.jwt import JWTData, JWTMethods
+from ml_service_common.jwt.utils import extract_jwt_data_from_http_request
 
 
 async def get_jwt_data(

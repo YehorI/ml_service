@@ -21,7 +21,9 @@ def callback(ctx: typer.Context):
     ctx.obj = ctx.obj or {}
 
     if "loop" not in ctx.obj:
-        ctx.obj["loop"] = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        ctx.obj["loop"] = loop
     if settings := ctx.obj.get("settings"):
         ctx.obj["settings"] = settings.wallet
     else:

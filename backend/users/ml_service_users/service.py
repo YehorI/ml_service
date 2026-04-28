@@ -17,7 +17,9 @@ class Service(facet.AsyncioServiceMixin):
         return self._api
 
 
-def get_service(settings: Settings | None = None) -> Service:
+def get_service(
+    settings: Settings | None = None,
+) -> Service:
     settings = settings or Settings()
     database_service = database.get_service(settings=settings.database)
     api_service = api.get_service(

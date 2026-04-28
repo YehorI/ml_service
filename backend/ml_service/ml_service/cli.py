@@ -13,7 +13,9 @@ def callback(ctx: typer.Context) -> None:
     ctx.obj = ctx.obj or {}
 
     if "loop" not in ctx.obj:
-        ctx.obj["loop"] = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        ctx.obj["loop"] = loop
 
 
 def run(ctx: typer.Context) -> None:

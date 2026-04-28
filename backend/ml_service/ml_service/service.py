@@ -4,6 +4,8 @@ import ml_service_model
 import ml_service_users
 import ml_service_wallet
 
+from .settings import Settings
+
 
 class Service(facet.AsyncioServiceMixin):
     def __init__(
@@ -39,11 +41,9 @@ class Service(facet.AsyncioServiceMixin):
 
 
 def get_service(
-        users_settings: ml_service_users.Settings | None = None,
-        wallet_settings: ml_service_wallet.Settings | None = None,
-        model_settings: ml_service_model.Settings | None = None,
+    settings: Settings
 ) -> Service:
-    users_service = ml_service_users.get_service(settings=users_settings)
-    wallet_service = ml_service_wallet.get_service(settings=wallet_settings)
-    model_service = ml_service_model.get_service(settings=model_settings)
+    users_service = ml_service_users.get_service(settings=settings.ml_service_users)
+    wallet_service = ml_service_wallet.get_service(settings=settings.ml_service_wallet)
+    model_service = ml_service_model.get_service(settings=settings.ml_service_model)
     return Service(users=users_service, wallet=wallet_service, model=model_service)

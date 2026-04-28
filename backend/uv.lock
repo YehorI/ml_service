@@ -214,6 +214,15 @@ wheels = [
 ]
 
 [[package]]
+name = "facet"
+version = "0.10.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/7c/c9/7a23108d8eef1b258ba836aada0af1071cf3f55ebae9251e4b1bfa02cfab/facet-0.10.1.tar.gz", hash = "sha256:1d31461cc1bb9428876415e17e5fa1bc644909f7405abacb44dc35eb6217245a", size = 8858, upload-time = "2024-04-25T20:41:49.118Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e9/1c/82d57c223addef24e4bc716b1b99a30d0568c77d74187e86763b8c1e10cc/facet-0.10.1-py3-none-any.whl", hash = "sha256:09033945cb055908568855dc9a4d845d559bd6ce5eeb5a0abd5061e10fec511c", size = 6576, upload-time = "2024-04-25T20:41:46.619Z" },
+]
+
+[[package]]
 name = "fastapi"
 version = "0.136.0"
 source = { registry = "https://pypi.org/simple" }
@@ -286,6 +295,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/87/f9/c1eb8635a24e87ade2efce21e3ce8cd6b8630bb685ddc9cdaca1349b2eb5/isort-5.13.2.tar.gz", hash = "sha256:48fdfcb9face5d58a4f6dde2e72a1fb8dcaf8ab26f95ab49fab84c2ddefb0109", size = 175303, upload-time = "2023-12-13T20:37:26.124Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d1/b3/8def84f539e7d2289a02f0524b944b15d7c75dab7628bedf1c4f0992029c/isort-5.13.2-py3-none-any.whl", hash = "sha256:8ca5e72a8d85860d5a3fa69b8745237f2939afe12dbf656afbcb47fe72d947a6", size = 92310, upload-time = "2023-12-13T20:37:23.244Z" },
+]
+
+[[package]]
+name = "loguru"
+version = "0.7.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "win32-setctime", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3a/05/a1dae3dffd1116099471c643b8924f5aa6524411dc6c63fdae648c4f1aca/loguru-0.7.3.tar.gz", hash = "sha256:19480589e77d47b8d85b2c827ad95d49bf31b0dcde16593892eb51dd18706eb6", size = 63559, upload-time = "2024-12-06T11:20:56.608Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0c/29/0348de65b8cc732daa3e33e67806420b2ae89bdce2b04af740289c5c6c8c/loguru-0.7.3-py3-none-any.whl", hash = "sha256:31a33c10c8e1e10422bfd431aeb5d351c7cf7fa671e3c4df004162264b28220c", size = 61595, upload-time = "2024-12-06T11:20:54.538Z" },
 ]
 
 [[package]]
@@ -369,7 +391,10 @@ dependencies = [
     { name = "database" },
     { name = "database-repository" },
     { name = "email-validator" },
+    { name = "facet" },
     { name = "fastapi" },
+    { name = "loguru" },
+    { name = "ml-service-common" },
     { name = "ml-service-model" },
     { name = "ml-service-users" },
     { name = "ml-service-wallet" },
@@ -383,7 +408,10 @@ requires-dist = [
     { name = "database", editable = "database" },
     { name = "database-repository", editable = "database_repository" },
     { name = "email-validator", specifier = ">=2.2" },
+    { name = "facet", specifier = ">=0.5" },
     { name = "fastapi", specifier = ">=0.115" },
+    { name = "loguru", specifier = ">=0.7.3" },
+    { name = "ml-service-common", editable = "common" },
     { name = "ml-service-model", editable = "model" },
     { name = "ml-service-users", editable = "users" },
     { name = "ml-service-wallet", editable = "wallet" },
@@ -396,14 +424,20 @@ name = "ml-service-common"
 version = "0.1.0"
 source = { editable = "common" }
 dependencies = [
+    { name = "facet" },
+    { name = "fastapi" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
+    { name = "uvicorn" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "facet", specifier = ">=0.5" },
+    { name = "fastapi", specifier = ">=0.115" },
     { name = "pydantic", specifier = ">=2.0" },
     { name = "pydantic-settings", specifier = ">=2.0" },
+    { name = "uvicorn", specifier = ">=0.30" },
 ]
 
 [[package]]
@@ -412,15 +446,29 @@ version = "0.1.0"
 source = { editable = "model" }
 dependencies = [
     { name = "database-repository" },
+    { name = "facet" },
+    { name = "fastapi" },
+    { name = "loguru" },
+    { name = "ml-service-common" },
     { name = "ml-service-users" },
     { name = "ml-service-wallet" },
+    { name = "pydantic-settings" },
+    { name = "typer" },
+    { name = "uvicorn" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "database-repository", editable = "database_repository" },
+    { name = "facet", specifier = ">=0.5" },
+    { name = "fastapi", specifier = ">=0.115" },
+    { name = "loguru", specifier = ">=0.7.3" },
+    { name = "ml-service-common", editable = "common" },
     { name = "ml-service-users", editable = "users" },
     { name = "ml-service-wallet", editable = "wallet" },
+    { name = "pydantic-settings", specifier = ">=2.0" },
+    { name = "typer", specifier = ">=0.12" },
+    { name = "uvicorn", specifier = ">=0.30" },
 ]
 
 [[package]]
@@ -429,10 +477,22 @@ version = "0.1.0"
 source = { editable = "users" }
 dependencies = [
     { name = "database-repository" },
+    { name = "facet" },
+    { name = "fastapi" },
+    { name = "loguru" },
+    { name = "ml-service-common" },
+    { name = "uvicorn" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "database-repository", editable = "database_repository" }]
+requires-dist = [
+    { name = "database-repository", editable = "database_repository" },
+    { name = "facet", specifier = ">=0.5" },
+    { name = "fastapi", specifier = ">=0.115" },
+    { name = "loguru", specifier = ">=0.7.3" },
+    { name = "ml-service-common", editable = "common" },
+    { name = "uvicorn", specifier = ">=0.30" },
+]
 
 [[package]]
 name = "ml-service-wallet"
@@ -440,13 +500,27 @@ version = "0.1.0"
 source = { editable = "wallet" }
 dependencies = [
     { name = "database-repository" },
+    { name = "facet" },
+    { name = "fastapi" },
+    { name = "loguru" },
+    { name = "ml-service-common" },
     { name = "ml-service-users" },
+    { name = "pydantic-settings" },
+    { name = "typer" },
+    { name = "uvicorn" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "database-repository", editable = "database_repository" },
+    { name = "facet", specifier = ">=0.5" },
+    { name = "fastapi", specifier = ">=0.115" },
+    { name = "loguru", specifier = ">=0.7.3" },
+    { name = "ml-service-common", editable = "common" },
     { name = "ml-service-users", editable = "users" },
+    { name = "pydantic-settings", specifier = ">=2.0" },
+    { name = "typer", specifier = ">=0.12" },
+    { name = "uvicorn", specifier = ">=0.30" },
 ]
 
 [[package]]
@@ -871,6 +945,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/1f/93/041fca8274050e40e6791f267d82e0e2e27dd165627bd640d3e0e378d877/uvicorn-0.46.0.tar.gz", hash = "sha256:fb9da0926999cc6cb22dc7cd71a94a632f078e6ae47ff683c5c420750fb7413d", size = 88758, upload-time = "2026-04-23T07:16:00.151Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/31/a3/5b1562db76a5a488274b2332a97199b32d0442aca0ed193697fd47786316/uvicorn-0.46.0-py3-none-any.whl", hash = "sha256:bbebbcbed972d162afca128605223022bedd345b7bc7855ce66deb31487a9048", size = 70926, upload-time = "2026-04-23T07:15:58.355Z" },
+]
+
+[[package]]
+name = "win32-setctime"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b3/8f/705086c9d734d3b663af0e9bb3d4de6578d08f46b1b101c2442fd9aecaa2/win32_setctime-1.2.0.tar.gz", hash = "sha256:ae1fdf948f5640aae05c511ade119313fb6a30d7eabe25fef9764dca5873c4c0", size = 4867, upload-time = "2024-12-07T15:28:28.314Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e1/07/c6fe3ad3e685340704d314d765b7912993bcb8dc198f0e7a89382d37974b/win32_setctime-1.2.0-py3-none-any.whl", hash = "sha256:95d644c4e708aba81dc3704a116d8cbc974d70b3bdb8be1d150e36be6e9d1390", size = 4083, upload-time = "2024-12-07T15:28:26.465Z" },
 ]
 
 [[package]]

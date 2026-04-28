@@ -1,8 +1,8 @@
 import fastapi
-from collabry_common.fastapi.dependencies.jwt import get_jwt_data
-from collabry_common.fastapi.exceptions import HTTPTooManyRequests
-from collabry_common.interfaces.rate_limiter import RateLimiterInterface
-from collabry_common.jwt import JWTData
+from ml_service_common.fastapi.dependencies.jwt import get_jwt_data
+from ml_service_common.fastapi.exceptions import HTTPTooManyRequests
+from ml_service_common.interfaces.rate_limiter import RateLimiterInterface
+from ml_service_common.jwt import JWTData
 
 
 class RateLimit:
