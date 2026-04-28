@@ -1,3 +1,4 @@
-from ml_service_users.api.service import get_service
+from ml_service_users.service import get_service
 
-app = get_service().get_app()
+_service = get_service()
+app = _service.api.get_app()

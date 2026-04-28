@@ -1,7 +1,7 @@
-from pydantic_settings import BaseSettings
+from ml_service_common.fastapi import FastAPISettings
 
 
-class Settings(BaseSettings):
+class Settings(FastAPISettings):
     title: str = "ML Service Users API"
     version: str = "0.1.0"
     host: str = "127.0.0.1"
