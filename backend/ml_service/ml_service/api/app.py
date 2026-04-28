@@ -10,7 +10,7 @@ def create_app() -> FastAPI:
     install_exception_handlers(app)
 
     app.include_router(auth.router, prefix="/auth", tags=["auth"])
-    app.include_router(users.router, prefix="/users", tags=["users"])
+    app.include_router(users.router, prefix="/users", tags=["ml_service_users"])
     app.include_router(balance.router, prefix="/balance", tags=["balance"])
     app.include_router(predict.router, prefix="/predict", tags=["predict"])
     app.include_router(history.router, prefix="/history", tags=["history"])

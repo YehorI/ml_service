@@ -2,21 +2,23 @@ from collections.abc import AsyncGenerator
 
 from fastapi import Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from ml_service_common.sqlalchemy.service import Service
 
 from database_repository import get_service
-from database_repository.repositories import (
-    SqlAlchemyBalanceRepository,
-    SqlAlchemyMLModelRepository,
-    SqlAlchemyMLTaskRepository,
-    SqlAlchemyPredictionResultRepository,
-    SqlAlchemyTransactionRepository,
-    SqlAlchemyUserRepository,
-)
+from database_repository.service import Service
 from ml_service.api.security import hash_password
-from model.services.task_service import TaskService
-from users.services.user_service import UserService
-from wallet.services.wallet_service import WalletService
+from ml_service_model.database.repositories import (
+    SqlAlchemyAltMLModelRepository,
+    SqlAlchemyAltMLTaskRepository,
+    SqlAlchemyAltPredictionResultRepository,
+)
+from ml_service_model.services.task_service import TaskService
+from ml_service_users.database.repositories import SqlAlchemyAltUserRepository
+from ml_service_users.services.user_service import UserService
+from ml_service_wallet.database.repositories import (
+    SqlAlchemyAltBalanceRepository,
+    SqlAlchemyAltTransactionRepository,
+)
+from ml_service_wallet.services.wallet_service import WalletService
 
 _service: Service | None = None
 
@@ -38,25 +40,25 @@ basic_auth = HTTPBasic(auto_error=True)
 
 
 async def get_user_service(service: Service = Depends(db_transaction)) -> UserService:
-    return UserService(user_repository=SqlAlchemyUserRepository(service))
+    return UserService(user_repository=SqlAlchemyAltUserRepository(service))
 
 
 async def get_wallet_service(service: Service = Depends(db_transaction)) -> WalletService:
     return WalletService(
-        balance_repository=SqlAlchemyBalanceRepository(service),
-        transaction_repository=SqlAlchemyTransactionRepository(service),
+        balance_repository=SqlAlchemyAltBalanceRepository(service),
+        transaction_repository=SqlAlchemyAltTransactionRepository(service),
     )
 
 
 async def get_task_service(service: Service = Depends(db_transaction)) -> TaskService:
     wallet_service = WalletService(
-        balance_repository=SqlAlchemyBalanceRepository(service),
-        transaction_repository=SqlAlchemyTransactionRepository(service),
+        balance_repository=SqlAlchemyAltBalanceRepository(service),
+        transaction_repository=SqlAlchemyAltTransactionRepository(service),
     )
     return TaskService(
-        task_repository=SqlAlchemyMLTaskRepository(service),
-        model_repository=SqlAlchemyMLModelRepository(service),
-        result_repository=SqlAlchemyPredictionResultRepository(service),
+        task_repository=SqlAlchemyAltMLTaskRepository(service),
+        model_repository=SqlAlchemyAltMLModelRepository(service),
+        result_repository=SqlAlchemyAltPredictionResultRepository(service),
         wallet_service=wallet_service,
     )
 

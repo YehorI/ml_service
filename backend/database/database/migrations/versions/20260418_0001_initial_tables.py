@@ -11,7 +11,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.create_table(
-        "users",
+        "ml_service_users",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("username", sa.String(255), nullable=False),
         sa.Column("email", sa.String(255), nullable=False),
@@ -129,7 +129,7 @@ def downgrade() -> None:
     op.drop_table("ml_tasks")
     op.drop_table("ml_models")
     op.drop_table("wallets")
-    op.drop_table("users")
+    op.drop_table("ml_service_users")
     op.execute("DROP TYPE IF EXISTS userroleorm")
     op.execute("DROP TYPE IF EXISTS taskstatusorm")
     op.execute("DROP TYPE IF EXISTS transactiontypeorm")
