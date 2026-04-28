@@ -5,14 +5,21 @@ from pydantic import BaseModel, Field
 
 
 class PredictTaskMessage(BaseModel):
-    task_id: str
-    model_name: str = Field(min_length=1, max_length=128)
-    input_data: dict[str, Any]
+    """Envelope put on RabbitMQ when /tasks enqueues an async prediction.
+
+    Carries DB identifiers only — the worker reloads the full task, user,
+    model, and input data from the database. Keeping the message minimal
+    means the queue can never disagree with the source of truth.
+    """
+
+    task_id: int = Field(gt=0)
+    user_id: int = Field(gt=0)
+    model_id: int = Field(gt=0)
     submitted_at: datetime
 
 
 class PredictTaskResult(BaseModel):
-    task_id: str
+    task_id: int
     model_name: str
     output_data: dict[str, Any]
     processed_at: datetime

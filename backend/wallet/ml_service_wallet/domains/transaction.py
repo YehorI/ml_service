@@ -60,9 +60,25 @@ class Transaction(ABC):
 
 
 class DepositTransaction(Transaction):
+    def __init__(
+        self,
+        transaction_id: int,
+        user: User,
+        wallet: Wallet,
+        amount: float,
+        ml_task_id: int | None = None,
+        created_at: datetime | None = None,
+    ) -> None:
+        super().__init__(transaction_id, user, wallet, amount, created_at)
+        self._ml_task_id = ml_task_id
+
     @property
     def transaction_type(self) -> TransactionType:
         return TransactionType.DEPOSIT
+
+    @property
+    def ml_task_id(self) -> int | None:
+        return self._ml_task_id
 
     def apply(self) -> None:
         if self._is_applied:

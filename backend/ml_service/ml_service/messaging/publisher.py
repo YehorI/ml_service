@@ -46,7 +46,7 @@ class TaskPublisher:
                 body=body,
                 content_type="application/json",
                 delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
-                message_id=message.task_id,
+                message_id=str(message.task_id),
             ),
             routing_key=self._settings.queue_name,
         )

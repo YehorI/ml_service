@@ -3,6 +3,7 @@ from ml_service_users.domains.user import User
 from ml_service_users.services.user_service import UserService
 
 from ml_service.api.deps import get_user_service
+from ml_service.api.jwt_auth import create_access_token
 from ml_service.api.schemas import LoginRequest, LoginResponse, RegisterRequest, UserPublic
 from ml_service.api.security import hash_password
 
@@ -32,5 +33,10 @@ async def register(payload: RegisterRequest, user_service: UserService = Depends
 @router.post("/login", response_model=LoginResponse)
 async def login(payload: LoginRequest, user_service: UserService = Depends(get_user_service)):
     user = await user_service.authenticate(payload.username, hash_password(payload.password))
-    return LoginResponse(user=_to_public(user))
+    token, expires_in = create_access_token(user.user_id)
+    return LoginResponse(
+        user=_to_public(user),
+        access_token=token,
+        expires_in=expires_in,
+    )
 

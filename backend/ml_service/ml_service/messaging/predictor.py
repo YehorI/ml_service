@@ -1,7 +1,4 @@
-from datetime import datetime, timezone
 from typing import Any
-
-from ml_service.messaging.schemas import PredictTaskMessage, PredictTaskResult
 
 
 class MockPredictor:
@@ -11,18 +8,12 @@ class MockPredictor:
     verified end-to-end without loading model weights.
     """
 
-    def predict(self, message: PredictTaskMessage) -> PredictTaskResult:
-        output: dict[str, Any] = {
-            "model": message.model_name,
-            "input_keys": sorted(message.input_data.keys()),
-            "score": self._score(message.input_data),
+    def predict(self, model_name: str, input_data: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "model": model_name,
+            "input_keys": sorted(input_data.keys()),
+            "score": self._score(input_data),
         }
-        return PredictTaskResult(
-            task_id=message.task_id,
-            model_name=message.model_name,
-            output_data=output,
-            processed_at=datetime.now(timezone.utc),
-        )
 
     @staticmethod
     def _score(payload: dict[str, Any]) -> float:

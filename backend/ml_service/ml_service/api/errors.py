@@ -13,6 +13,8 @@ from ml_service_users.services.user_service import (
 from ml_service_wallet.services.wallet_service import InsufficientFundsError
 from pydantic import ValidationError
 
+from ml_service.api.jwt_auth import InvalidTokenError, TokenExpiredError
+
 
 def _err(code: str, message: str, *, details: list[str] | None = None) -> dict:
     payload: dict = {"code": code, "message": message}
@@ -33,6 +35,14 @@ def install_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(InvalidPasswordError)
     async def _invalid_password(_: Request, exc: InvalidPasswordError):
         return JSONResponse(status_code=401, content=_err("invalid_credentials", str(exc)))
+
+    @app.exception_handler(TokenExpiredError)
+    async def _token_expired(_: Request, exc: TokenExpiredError):
+        return JSONResponse(status_code=401, content=_err("token_expired", str(exc)))
+
+    @app.exception_handler(InvalidTokenError)
+    async def _invalid_token(_: Request, exc: InvalidTokenError):
+        return JSONResponse(status_code=401, content=_err("invalid_token", str(exc)))
 
     @app.exception_handler(InsufficientFundsError)
     async def _insufficient(_: Request, exc: InsufficientFundsError):
