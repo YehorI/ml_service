@@ -6,6 +6,10 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "database-repository",
+    "facet>=0.5",
+    "fastapi>=0.115",
+    "ml_service_common",
+    "uvicorn>=0.30",
 ]
 
 [build-system]
@@ -17,3 +21,4 @@ packages = ["ml_service_users"]
 
 [tool.uv.sources]
 database-repository = { workspace = true }
+ml_service_common = { workspace = true }

@@ -4,20 +4,11 @@ import fastapi
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from database_repository.dto.users import User
-from ml_service_users.database.service import Service, get_service
-
-_database_singleton: Service | None = None
+from ml_service_users.database.service import Service
 
 
-def _get_database_singleton() -> Service:
-    global _database_singleton
-    if _database_singleton is None:
-        _database_singleton = get_service()
-    return _database_singleton
-
-
-async def get_database() -> AsyncGenerator[Service, None]:
-    service = _get_database_singleton()
+async def get_database(request: fastapi.Request) -> AsyncGenerator[Service, None]:
+    service: Service = request.app.service.database
     async with service.transaction():
         yield service
 

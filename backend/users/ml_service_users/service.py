@@ -1,27 +1,27 @@
-from ml_service_users.api.service import Service as ApiService
-from ml_service_users.api.service import get_service as get_api_service
-from ml_service_users.database.service import Service as DatabaseService
-from ml_service_users.database.service import get_service as get_database_service
+import facet
+
+from ml_service_users import api, database
 from ml_service_users.settings import Settings
 
 
-class Service:
-    def __init__(self, api: ApiService, database: DatabaseService) -> None:
+class Service(facet.AsyncioServiceMixin):
+    def __init__(self, api: api.Service) -> None:
         self._api = api
-        self._database = database
 
     @property
-    def api(self) -> ApiService:
+    def dependencies(self) -> list[facet.AsyncioServiceMixin]:
+        return [*super().dependencies, self._api]
+
+    @property
+    def api(self) -> api.Service:
         return self._api
-
-    @property
-    def database(self) -> DatabaseService:
-        return self._database
 
 
 def get_service(settings: Settings | None = None) -> Service:
     settings = settings or Settings()
-    return Service(
-        api=get_api_service(settings=settings.api),
-        database=get_database_service(settings=settings.database),
+    database_service = database.get_service(settings=settings.database)
+    api_service = api.get_service(
+        database=database_service,
+        settings=settings.api,
     )
+    return Service(api=api_service)
