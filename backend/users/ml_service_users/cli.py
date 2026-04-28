@@ -1,22 +1,37 @@
-import typer
-import uvicorn
+import asyncio
 
-from ml_service_users.settings import Settings
+import typer
+from loguru import logger
+
+from .service import get_service
+from .settings import Settings
+
+
+@logger.catch
+def run(ctx: typer.Context):
+    loop: asyncio.AbstractEventLoop = ctx.obj["loop"]
+    settings: Settings = ctx.obj["settings"]
+
+    users_service = get_service(settings=settings, loop=loop)
+
+    loop.run_until_complete(users_service.run())
+
+
+def callback(ctx: typer.Context):
+    ctx.obj = ctx.obj or {}
+
+    if "loop" not in ctx.obj:
+        ctx.obj["loop"] = asyncio.get_event_loop()
+    if settings := ctx.obj.get("settings"):
+        ctx.obj["settings"] = settings.users
+    else:
+        ctx.obj["settings"] = Settings.load(env_prefix="USERS__")
 
 
 def get_cli() -> typer.Typer:
-    cli = typer.Typer(name="ml-service-users", help="ML Service Users CLI")
+    cli = typer.Typer()
 
-    @cli.command("api")
-    def api(
-        host: str = typer.Option(None),
-        port: int = typer.Option(None),
-    ) -> None:
-        settings = Settings()
-        uvicorn.run(
-            "ml_service_users.asgi:app",
-            host=host or settings.api.host,
-            port=port or settings.api.port,
-        )
+    cli.callback()(callback)
+    cli.command(name="run")(run)
 
     return cli
