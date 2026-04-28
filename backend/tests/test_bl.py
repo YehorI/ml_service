@@ -2,7 +2,6 @@ from datetime import datetime
 from unittest.mock import AsyncMock
 
 import pytest
-
 from ml_service_users.domains.user import User
 from ml_service_users.services.user_service import (
     InvalidPasswordError,

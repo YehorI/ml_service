@@ -56,6 +56,22 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  worker:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    env_file:
+      - ../backend/.env
+    command: ["worker"]
+    deploy:
+      replicas: 2
+    restart: on-failure
+    networks:
+      - ml_network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
 volumes:
   backend-data:
   postgres-data:

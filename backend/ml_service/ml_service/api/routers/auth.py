@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, status
+from ml_service_users.domains.user import User
+from ml_service_users.services.user_service import UserService
 
 from ml_service.api.deps import get_user_service
 from ml_service.api.schemas import LoginRequest, LoginResponse, RegisterRequest, UserPublic
 from ml_service.api.security import hash_password
-from ml_service_users.domains.user import User
-from ml_service_users.services.user_service import UserService
 
 router = APIRouter()
 
