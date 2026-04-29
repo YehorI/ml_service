@@ -15,6 +15,7 @@ members = [
     "ml-service-model",
     "ml-service-users",
     "ml-service-wallet",
+    "ml-service-worker",
     "service",
 ]
 
@@ -424,6 +425,7 @@ name = "ml-service-common"
 version = "0.1.0"
 source = { editable = "common" }
 dependencies = [
+    { name = "aio-pika" },
     { name = "facet" },
     { name = "fastapi" },
     { name = "pydantic" },
@@ -433,6 +435,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "aio-pika", specifier = ">=9.4" },
     { name = "facet", specifier = ">=0.5" },
     { name = "fastapi", specifier = ">=0.115" },
     { name = "pydantic", specifier = ">=2.0" },
@@ -450,8 +453,6 @@ dependencies = [
     { name = "fastapi" },
     { name = "loguru" },
     { name = "ml-service-common" },
-    { name = "ml-service-users" },
-    { name = "ml-service-wallet" },
     { name = "pydantic-settings" },
     { name = "typer" },
     { name = "uvicorn" },
@@ -464,8 +465,6 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.115" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "ml-service-common", editable = "common" },
-    { name = "ml-service-users", editable = "users" },
-    { name = "ml-service-wallet", editable = "wallet" },
     { name = "pydantic-settings", specifier = ">=2.0" },
     { name = "typer", specifier = ">=0.12" },
     { name = "uvicorn", specifier = ">=0.30" },
@@ -504,7 +503,6 @@ dependencies = [
     { name = "fastapi" },
     { name = "loguru" },
     { name = "ml-service-common" },
-    { name = "ml-service-users" },
     { name = "pydantic-settings" },
     { name = "typer" },
     { name = "uvicorn" },
@@ -517,10 +515,30 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.115" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "ml-service-common", editable = "common" },
-    { name = "ml-service-users", editable = "users" },
     { name = "pydantic-settings", specifier = ">=2.0" },
     { name = "typer", specifier = ">=0.12" },
     { name = "uvicorn", specifier = ">=0.30" },
+]
+
+[[package]]
+name = "ml-service-worker"
+version = "0.1.0"
+source = { editable = "worker" }
+dependencies = [
+    { name = "database-repository" },
+    { name = "loguru" },
+    { name = "ml-service-common" },
+    { name = "ml-service-model" },
+    { name = "ml-service-wallet" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "database-repository", editable = "database_repository" },
+    { name = "loguru", specifier = ">=0.7.3" },
+    { name = "ml-service-common", editable = "common" },
+    { name = "ml-service-model", editable = "model" },
+    { name = "ml-service-wallet", editable = "wallet" },
 ]
 
 [[package]]

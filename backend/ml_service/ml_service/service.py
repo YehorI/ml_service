@@ -43,7 +43,7 @@ class Service(facet.AsyncioServiceMixin):
 def get_service(
     settings: Settings
 ) -> Service:
-    users_service = ml_service_users.get_service(settings=settings.ml_service_users)
-    wallet_service = ml_service_wallet.get_service(settings=settings.ml_service_wallet)
-    model_service = ml_service_model.get_service(settings=settings.ml_service_model)
+    users_service = ml_service_users.get_service(settings=settings.users)
+    wallet_service = ml_service_wallet.get_service(settings=settings.wallet)
+    model_service = ml_service_model.get_service(settings=settings.model)
     return Service(users=users_service, wallet=wallet_service, model=model_service)

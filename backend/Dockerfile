@@ -14,8 +14,6 @@ COPY ./database /app/database
 COPY ./database_repository /app/database_repository
 COPY ./common /app/common
 
-# RUN uv pip install --system --no-cache -r pyproject.toml
-# RUN uv pip install --system --no-cache -e .
 RUN uv pip install --system --no-cache \
     -e ./common \
     -e ./database \
@@ -26,4 +24,3 @@ RUN uv pip install --system --no-cache \
     -e ./ml_service
 
 ENTRYPOINT ["python", "-m", "ml_service"]
-CMD ["api", "--host", "0.0.0.0", "--port", "80"]

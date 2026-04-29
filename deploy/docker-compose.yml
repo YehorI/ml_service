@@ -43,7 +43,7 @@ services:
     volumes:
       - backend-data:/var/lib/app/data
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -59,10 +59,11 @@ services:
   worker:
     build:
       context: ../backend
-      dockerfile: Dockerfile
+      dockerfile: worker/Dockerfile
     env_file:
       - ../backend/.env
-    command: ["worker"]
+    volumes:
+      - backend-data:/var/lib/app/data
     deploy:
       replicas: 2
     restart: on-failure
@@ -70,6 +71,8 @@ services:
       - ml_network
     depends_on:
       rabbitmq:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
 
 volumes:

@@ -16,10 +16,6 @@ class Service(facet.AsyncioServiceMixin):
     def api(self) -> api.Service:
         return self._api
 
-    @property
-    def database(self) -> database.Service:
-        return self._api.database
-
 
 def get_service(settings: Settings | None = None) -> Service:
     settings = settings or Settings()

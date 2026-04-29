@@ -7,7 +7,6 @@ from ml_service_model.interfaces.repositories import (
     PredictionResultRepository,
 )
 from ml_service_model.service import Service, get_service
-from ml_service_model.services.task_service import TaskService
 from ml_service_model.settings import Settings
 
 __all__ = [
@@ -19,7 +18,6 @@ __all__ = [
     "PredictionResultRepository",
     "Service",
     "Settings",
-    "TaskService",
     "TaskStatus",
     "get_cli",
     "get_service",

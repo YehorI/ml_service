@@ -12,9 +12,8 @@ def run(ctx: typer.Context):
     loop: asyncio.AbstractEventLoop = ctx.obj["loop"]
     settings: Settings = ctx.obj["settings"]
 
-    users_service = get_service(settings=settings, loop=loop)
-
-    loop.run_until_complete(users_service.run())
+    service = get_service(settings=settings)
+    loop.run_until_complete(service.run())
 
 
 def callback(ctx: typer.Context):

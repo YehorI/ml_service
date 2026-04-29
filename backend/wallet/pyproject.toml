@@ -4,7 +4,6 @@ version = "0.1.0"
 description = ""
 requires-python = ">=3.14"
 dependencies = [
-    "ml_service_users",
     "ml_service_common",
     "database-repository",
     "facet>=0.5",
@@ -23,6 +22,5 @@ build-backend = "hatchling.build"
 packages = ["ml_service_wallet"]
 
 [tool.uv.sources]
-ml_service_users = { workspace = true }
 ml_service_common = { workspace = true }
 database-repository = { workspace = true }

@@ -1,5 +1,6 @@
 import facet
 
+from ml_service_common.messaging import RabbitMQPublisher
 from ml_service_model import api, database
 from ml_service_model.settings import Settings
 
@@ -16,16 +17,14 @@ class Service(facet.AsyncioServiceMixin):
     def api(self) -> api.Service:
         return self._api
 
-    @property
-    def database(self) -> database.Service:
-        return self._api.database
-
 
 def get_service(settings: Settings | None = None) -> Service:
     settings = settings or Settings()
     database_service = database.get_service(settings=settings.database)
+    publisher = RabbitMQPublisher(settings=settings.messaging)
     api_service = api.get_service(
         database=database_service,
+        publisher=publisher,
         settings=settings.api,
     )
     return Service(api=api_service)
