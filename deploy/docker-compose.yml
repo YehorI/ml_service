@@ -64,7 +64,6 @@ services:
     env_file:
       - ../backend/.env
     environment:
-      WORKER_ID: ${HOSTNAME}
       HF_HOME: /cache/huggingface
     volumes:
       - hf-cache:/cache/huggingface

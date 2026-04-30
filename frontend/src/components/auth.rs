@@ -71,7 +71,7 @@ pub fn LoginPage(config: ApiConfig) -> impl IntoView {
     };
 
     view! {
-        <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+        <div class="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
             {move || if success.get() {
                 view! {
                     <div class="bg-white rounded-2xl shadow-lg p-10 w-full max-w-md text-center">
@@ -81,7 +81,7 @@ pub fn LoginPage(config: ApiConfig) -> impl IntoView {
                         <h2 class="text-2xl font-bold text-gray-900 mb-2">"Signed in!"</h2>
                         <p class="text-gray-500 mb-6">"Redirecting to your dashboard…"</p>
                         <a href="/dashboard" class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
-                            "Go to Dashboard"
+                            "Dashboard"
                         </a>
                     </div>
                 }.into_any()
@@ -173,7 +173,7 @@ pub fn RegisterPage(config: ApiConfig) -> impl IntoView {
     };
 
     view! {
-        <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+        <div class="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
             {move || if success.get() {
                 view! {
                     <div class="bg-white rounded-2xl shadow-lg p-10 w-full max-w-md text-center">

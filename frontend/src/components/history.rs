@@ -57,7 +57,6 @@ pub fn HistoryPage(config: ApiConfig) -> impl IntoView {
                 <div class="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-6 text-sm text-red-600">"⚠ " {msg}</div>
             })}
 
-            // Tab switcher
             <div class="flex bg-gray-100 rounded-xl p-1 mb-6 w-fit">
                 <button class=move || tab_class(tab.get() == 0) on:click=move |_| set_tab.set(0)>
                     "Transactions"

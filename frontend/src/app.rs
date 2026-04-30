@@ -59,7 +59,7 @@ fn Nav() -> impl IntoView {
     view! {
         <nav class="flex items-center gap-6 px-6 py-4 bg-white border-b border-gray-200 shadow-sm">
             <A href="/" attr:class="text-base font-bold text-gray-900 hover:text-blue-600 transition-colors mr-4">
-                "🤖 ML Service"
+                "👨‍🍳 ML Service"
             </A>
             <A href="/dashboard" attr:class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
                 "Dashboard"
@@ -85,7 +85,7 @@ fn get_config() -> ApiConfig {
 fn Home() -> impl IntoView {
     view! {
         <div class="max-w-4xl mx-auto px-4 py-16 text-center">
-            <p class="text-6xl mb-6">"🤖"</p>
+            <p class="text-6xl mb-6">"🐦‍⬛"</p>
             <h1 class="text-4xl font-bold text-gray-900 mb-4">"ML Prediction Service"</h1>
             <p class="text-lg text-gray-500 mb-10 max-w-xl mx-auto">
                 "Submit your data to cutting-edge machine learning models and receive instant predictions. "
@@ -102,19 +102,19 @@ fn Home() -> impl IntoView {
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                    <p class="text-2xl mb-3">"📤"</p>
-                    <h3 class="font-semibold text-gray-900 mb-2">"Upload Data"</h3>
-                    <p class="text-sm text-gray-500">"Send JSON data to any of our active ML models via the web interface or REST API."</p>
+                    <p class="text-2xl mb-3">"🧑‍🌾"</p>
+                    <h3 class="font-semibold text-gray-900 mb-2">"Order"</h3>
+                    <p class="text-sm text-gray-500">"Cook from your ingridients."</p>
                 </div>
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                    <p class="text-2xl mb-3">"⚡"</p>
-                    <h3 class="font-semibold text-gray-900 mb-2">"Get Predictions"</h3>
-                    <p class="text-sm text-gray-500">"Results are processed asynchronously. Credits are only deducted on success."</p>
+                    <p class="text-2xl mb-3">"🍽️"</p>
+                    <h3 class="font-semibold text-gray-900 mb-2">"Get your meal"</h3>
+                    <p class="text-sm text-gray-500">"Food is processed asynchronously by two cooks."</p>
                 </div>
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                    <p class="text-2xl mb-3">"📊"</p>
+                    <p class="text-2xl mb-3">"🥞"</p>
                     <h3 class="font-semibold text-gray-900 mb-2">"Track History"</h3>
-                    <p class="text-sm text-gray-500">"View all your predictions and transactions with full audit trail."</p>
+                    <p class="text-sm text-gray-500">"View all your orders and prescripts with full audit trail."</p>
                 </div>
             </div>
         </div>

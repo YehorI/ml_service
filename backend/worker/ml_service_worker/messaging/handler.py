@@ -6,17 +6,26 @@ from database_repository.models.task import TaskStatusORM
 from loguru import logger
 from ml_service_common.messaging.schemas import WorkerTaskMessage
 from ml_service_common.sqlalchemy_alt.service import SQLAlchemyService
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 
 class WorkerMessageHandler:
-    def __init__(self, db: SQLAlchemyService, worker_id: str, model_pipeline) -> None:
+    def __init__(
+        self,
+        db: SQLAlchemyService,
+        worker_id: str,
+        model_pipeline,
+    ) -> None:
         self._db = db
         self._worker_id = worker_id
         self._pipeline = model_pipeline
 
     async def handle(self, body: bytes) -> None:
-        message = WorkerTaskMessage.model_validate_json(body)
+        try:
+            message = WorkerTaskMessage.model_validate_json(body)
+        except Exception as exc:
+            logger.error(f"[{self._worker_id}] failed to parse message, discarding: {exc}")
+            return
         logger.info(f"[{self._worker_id}] received task_id={message.task_id} model={message.model!r}")
 
         text = " ".join(f"{k}={v}" for k, v in message.features.items())
@@ -29,7 +38,7 @@ class WorkerMessageHandler:
             task_orm = (
                 await self._db.session.execute(
                     select(MLTaskORM).where(
-                        MLTaskORM.input_data["_task_uuid"].astext == message.task_id
+                        func.json_extract_path_text(MLTaskORM.input_data, "_task_uuid") == message.task_id
                     )
                 )
             ).scalar_one_or_none()

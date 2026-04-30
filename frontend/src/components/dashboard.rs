@@ -38,7 +38,6 @@ pub fn Dashboard(config: ApiConfig) -> impl IntoView {
         });
     };
 
-    // Load on mount
     let load_on_mount = load_data.clone();
     Effect::new(move |_| { load_on_mount(); });
 
@@ -75,7 +74,6 @@ pub fn Dashboard(config: ApiConfig) -> impl IntoView {
             })}
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                // Balance card
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <p class="text-sm text-gray-500 mb-1">"Current Balance"</p>
                     <p class="text-4xl font-bold text-gray-900 mb-1">
@@ -92,7 +90,6 @@ pub fn Dashboard(config: ApiConfig) -> impl IntoView {
                     </button>
                 </div>
 
-                // Task count card
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <p class="text-sm text-gray-500 mb-1">"Total ML Requests"</p>
                     <p class="text-4xl font-bold text-gray-900">
@@ -105,7 +102,6 @@ pub fn Dashboard(config: ApiConfig) -> impl IntoView {
                 </div>
             </div>
 
-            // Deposit section
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">"Add Credits"</h2>
                 {move || deposit_error.get().map(|msg| view! {
@@ -137,13 +133,13 @@ pub fn Dashboard(config: ApiConfig) -> impl IntoView {
             <div class="grid grid-cols-2 gap-4">
                 <a href="/predict"
                     class="block bg-blue-600 hover:bg-blue-700 text-white rounded-xl p-5 text-center transition-colors">
-                    <p class="text-2xl mb-2">"🤖"</p>
+                    <p class="text-2xl mb-2">"🥚"</p>
                     <p class="font-semibold">"New ML Request"</p>
                     <p class="text-xs text-blue-200 mt-1">"Submit data for prediction"</p>
                 </a>
                 <a href="/history"
                     class="block bg-gray-800 hover:bg-gray-900 text-white rounded-xl p-5 text-center transition-colors">
-                    <p class="text-2xl mb-2">"📋"</p>
+                    <p class="text-2xl mb-2">"🍳"</p>
                     <p class="font-semibold">"View History"</p>
                     <p class="text-xs text-gray-400 mt-1">"Transactions & predictions"</p>
                 </a>

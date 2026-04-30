@@ -35,7 +35,6 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
     let (result_task, set_result_task) = signal(Option::<Task>::None);
     let (balance, set_balance) = signal(Option::<f64>::None);
 
-    // Load models and balance on mount
     Effect::new(move |_| {
         let cfg = config.get_value();
         leptos::task::spawn_local(async move {
@@ -75,14 +74,12 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
             let result: Result<(), String> = async {
                 let model_id = model_id.ok_or("Please select a model")?;
 
-                // Validate JSON
                 let input_data: Value = serde_json::from_str(&json_str)
                     .map_err(|e| format!("Invalid JSON input: {}", e))?;
 
                 let creds = load_credentials().ok_or("Not authenticated. Please sign in first.")?;
                 let client = ApiClient::with_credentials(&cfg, &creds).map_err(|e| e.to_string())?;
 
-                // Check balance
                 let current_balance = client.wallet().get_balance().await
                     .map_err(|e| format!("Could not check balance: {}", e))?.amount;
                 set_balance.set(Some(current_balance));
@@ -100,7 +97,6 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
                     ));
                 }
 
-                // Submit task
                 let task = client.model()
                     .submit_task(PredictRequest { model_id, input_data })
                     .await
@@ -109,7 +105,6 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
                 let task_id = task.id;
                 set_result_task.set(Some(task));
 
-                // Poll for completion
                 for _ in 0..30 {
                     wasm_sleep(2000).await;
 
@@ -143,7 +138,7 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
             })}
 
             {move || error.get().map(|msg| view! {
-                <div class="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-6 text-sm text-red-600">"⚠ " {msg}</div>
+                <div class="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-6 text-sm text-red-600">"⚠️" {msg}</div>
             })}
 
             <form on:submit=handle_submit class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
@@ -170,7 +165,6 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
                     })}
                 </div>
 
-                // Input JSON
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">
                         "Input Data (JSON)"

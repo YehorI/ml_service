@@ -24,3 +24,4 @@ RUN uv pip install --system --no-cache \
     -e ./ml_service
 
 ENTRYPOINT ["python", "-m", "ml_service"]
+CMD ["run"]

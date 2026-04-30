@@ -21,7 +21,11 @@ class BillingMessageHandler:
         self._publisher = publisher
 
     async def handle(self, body: bytes) -> None:
-        message = BillingRequestMessage.model_validate_json(body)
+        try:
+            message = BillingRequestMessage.model_validate_json(body)
+        except Exception as exc:
+            logger.error(f"Failed to parse billing message, discarding: {exc}")
+            return
         logger.info(f"Billing task_id={message.task_id} user_id={message.user_id} amount={message.cost_per_request}")
         async with self._db.transaction():
             user_orm = (

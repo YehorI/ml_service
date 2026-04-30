@@ -19,7 +19,9 @@ def get_service(settings: Settings | None = None) -> Service:
     settings = settings or Settings()
     db = SQLAlchemyService(settings=settings.database)
 
-    logger.info(f"Loading HuggingFace model for worker_id={settings.worker_id!r}...")
+    logger.info(
+        f"Loading HuggingFace model for worker_id={settings.worker_id!r}"
+    )
     from transformers import pipeline as hf_pipeline
     model_pipeline = hf_pipeline(
         "text-classification",
@@ -27,6 +29,12 @@ def get_service(settings: Settings | None = None) -> Service:
     )
     logger.info("Model loaded.")
 
-    handler = WorkerMessageHandler(db=db, worker_id=settings.worker_id, model_pipeline=model_pipeline)
-    consumer = RabbitMQConsumer(settings=settings.worker_messaging, handler=handler.handle)
+    handler = WorkerMessageHandler(
+        db=db,
+        worker_id=settings.worker_id,
+        model_pipeline=model_pipeline,
+    )
+    consumer = RabbitMQConsumer(
+        settings=settings.worker_messaging, handler=handler.handle
+    )
     return Service(consumer=consumer)
