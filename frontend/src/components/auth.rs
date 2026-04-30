@@ -1,5 +1,6 @@
 use leptos::prelude::*;
 use crate::clients::api_client::ApiClient;
+use crate::clients::RestClientError;
 use crate::clients::config::ApiConfig;
 use crate::clients::users::models::{LoginRequest, RegisterRequest};
 use crate::credentials::{save_credentials, Credentials};
@@ -48,7 +49,15 @@ pub fn LoginPage(config: ApiConfig) -> impl IntoView {
                 let client = ApiClient::new(&cfg).map_err(|e| e.to_string())?;
                 client.users().login(&LoginRequest { username: u.clone(), password: p.clone() })
                     .await
-                    .map_err(|e| e.to_string())?;
+                    .map_err(|e| match e {
+                        RestClientError::ResponseError { status, .. }
+                            if status.as_u16() == 401 || status.as_u16() == 403 =>
+                                "Incorrect username or password.".to_string(),
+                        RestClientError::ResponseError { status, .. }
+                            if status.as_u16() == 404 =>
+                                "Account not found.".to_string(),
+                        _ => "Login failed. Please try again.".to_string(),
+                    })?;
 
                 let creds = Credentials { username: u, password: p };
                 save_credentials(&creds);

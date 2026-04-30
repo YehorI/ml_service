@@ -1,5 +1,6 @@
 import fastapi
 from database_repository.dto.users import User
+from ml_service_common.fastapi.exceptions import HTTPNotFound, HTTPNotAuthenticated
 from ml_service_users.api.rest.dependencies import get_database
 from ml_service_users.api.rest.users.dependencies import get_path_user
 from ml_service_users.api.rest.users.schemas import (LoginRequest,
@@ -11,26 +12,14 @@ from ml_service_users.database.service import Service
 from ml_service_users.utils import hash_password
 
 
-class UserAlreadyExistsError(Exception):
-    pass
-
-
-class UserNotFoundError(Exception):
-    pass
-
-
-class InvalidPasswordError(Exception):
-    pass
-
-
 async def register(
     data: RegisterRequest = fastapi.Body(embed=False),
     database: Service = fastapi.Depends(get_database),
 ) -> UserResponse:
     if await database.get_user_by_username(data.username) is not None:
-        raise UserAlreadyExistsError(f"User with username {data.username!r} already exists")
+        raise fastapi.HTTPException(status_code=409, detail="Username already taken.")
     if await database.get_user_by_email(data.email) is not None:
-        raise UserAlreadyExistsError(f"User with email {data.email!r} already exists")
+        raise fastapi.HTTPException(status_code=409, detail="Email already registered.")
 
     user = await database.create_user(
         username=data.username,
@@ -46,9 +35,9 @@ async def login(
 ) -> LoginResponse:
     user = await database.get_user_by_username(data.username)
     if user is None:
-        raise UserNotFoundError(f"User {data.username!r} not found")
+        raise HTTPNotFound()
     if not user.verify_password(hash_password(data.password)):
-        raise InvalidPasswordError("Invalid password")
+        raise HTTPNotAuthenticated()
     return LoginResponse(user=UserResponse.from_db_model(user))
 
 

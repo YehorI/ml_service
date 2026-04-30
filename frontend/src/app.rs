@@ -7,6 +7,7 @@ use leptos_router::{
 
 use crate::clients::config::ApiConfig;
 use crate::components::auth::{LoginPage, RegisterPage};
+use crate::components::nav::NavAuthButtons;
 use crate::components::dashboard::Dashboard;
 use crate::components::history::HistoryPage;
 use crate::components::predict::PredictPage;
@@ -70,12 +71,7 @@ fn Nav() -> impl IntoView {
                 "History"
             </A>
             <div class="ml-auto flex gap-3">
-                <A href="/login" attr:class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
-                    "Sign In"
-                </A>
-                <A href="/register" attr:class="text-sm px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors">
-                    "Register"
-                </A>
+                <NavAuthButtons/>
             </div>
         </nav>
     }
