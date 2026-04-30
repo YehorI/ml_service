@@ -7,14 +7,21 @@ from ml_service_model.database.service import Service as DatabaseService
 
 
 class Service(FastAPIService):
-    def __init__(self, database: DatabaseService, publisher: RabbitMQPublisher, settings: Settings) -> None:
+    def __init__(
+        self,
+        database: DatabaseService,
+        publisher: RabbitMQPublisher,
+        worker_publisher: RabbitMQPublisher,
+        settings: Settings,
+    ) -> None:
         super().__init__(settings=settings)
         self._database = database
         self._publisher = publisher
+        self._worker_publisher = worker_publisher
 
     @property
     def dependencies(self) -> list:
-        return [*super().dependencies, self._publisher]
+        return [*super().dependencies, self._publisher, self._worker_publisher]
 
     @property
     def database(self) -> DatabaseService:
@@ -24,9 +31,15 @@ class Service(FastAPIService):
     def publisher(self) -> RabbitMQPublisher:
         return self._publisher
 
+    @property
+    def worker_publisher(self) -> RabbitMQPublisher:
+        return self._worker_publisher
+
     def setup_app(self, app: fastapi.FastAPI) -> None:
         from ml_service_model.api.rest.dependencies import (
             InvalidPasswordError, UserNotFoundError)
+        from ml_service_model.api.rest.predict.handlers import \
+            ModelNotFoundError as PredictModelNotFoundError
         from ml_service_model.api.rest.tasks.dependencies import (
             TaskAccessDeniedError, TaskNotFoundError)
         from ml_service_model.services.task_service import (ModelInactiveError,
@@ -42,6 +55,10 @@ class Service(FastAPIService):
 
         @app.exception_handler(ModelNotFoundError)
         async def _model_not_found(_: fastapi.Request, exc: ModelNotFoundError) -> fastapi.responses.JSONResponse:
+            return fastapi.responses.JSONResponse(status_code=404, content={"detail": str(exc)})
+
+        @app.exception_handler(PredictModelNotFoundError)
+        async def _predict_model_not_found(_: fastapi.Request, exc: PredictModelNotFoundError) -> fastapi.responses.JSONResponse:
             return fastapi.responses.JSONResponse(status_code=404, content={"detail": str(exc)})
 
         @app.exception_handler(ModelInactiveError)
@@ -62,6 +79,12 @@ class Service(FastAPIService):
 def get_service(
     database: DatabaseService,
     publisher: RabbitMQPublisher,
+    worker_publisher: RabbitMQPublisher,
     settings: Settings | None = None,
 ) -> Service:
-    return Service(database=database, publisher=publisher, settings=settings or Settings())
+    return Service(
+        database=database,
+        publisher=publisher,
+        worker_publisher=worker_publisher,
+        settings=settings or Settings(),
+    )

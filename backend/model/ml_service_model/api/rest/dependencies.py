@@ -18,6 +18,10 @@ async def get_publisher(request: fastapi.Request) -> RabbitMQPublisher:
     return request.app.service.publisher
 
 
+async def get_worker_publisher(request: fastapi.Request) -> RabbitMQPublisher:
+    return request.app.service.worker_publisher
+
+
 basic_auth = HTTPBasic(auto_error=True)
 
 

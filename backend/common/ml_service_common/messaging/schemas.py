@@ -18,3 +18,10 @@ class PredictRequestMessage(BaseModel):
     model_id: int
     model_name: str = Field(min_length=1)
     input_data: dict
+
+
+class WorkerTaskMessage(BaseModel):
+    task_id: str
+    features: dict
+    model: str
+    timestamp: datetime

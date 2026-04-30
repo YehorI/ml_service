@@ -23,9 +23,11 @@ def get_service(settings: Settings | None = None) -> Service:
     settings = settings or Settings()
     database_service = database.get_service(settings=settings.database)
     publisher = RabbitMQPublisher(settings=settings.billing_messaging)
+    worker_publisher = RabbitMQPublisher(settings=settings.worker_messaging)
     api_service = api.get_service(
         database=database_service,
         publisher=publisher,
+        worker_publisher=worker_publisher,
         settings=settings.api,
     )
     handler = PredictMessageHandler(db=database_service)

@@ -38,7 +38,7 @@ services:
     image: ml-service-backend:latest
     build:
       context: ../backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.app
     env_file:
       - ../backend/.env
     volumes:
@@ -51,6 +51,28 @@ services:
     restart: on-failure
     networks:
       - ml_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile.worker
+    env_file:
+      - ../backend/.env
+    environment:
+      WORKER_ID: ${HOSTNAME}
+      HF_HOME: /cache/huggingface
+    volumes:
+      - hf-cache:/cache/huggingface
+    restart: on-failure
+    networks:
+      - ml_network
+    deploy:
+      replicas: 2
     depends_on:
       postgres:
         condition: service_healthy
