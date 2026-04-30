@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field
-
 from database_repository.dto.users import User
+from pydantic import BaseModel, EmailStr, Field
 
 
 class UserResponse(BaseModel):

@@ -1,7 +1,6 @@
+from database_repository.models.base import Base
 from sqlalchemy import Boolean, Float, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from database_repository.models.base import Base
 
 
 class MLModelORM(Base):

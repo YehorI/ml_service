@@ -1,15 +1,12 @@
 import fastapi
-
 from database_repository.dto.users import User
 from ml_service_users.api.rest.dependencies import get_database
 from ml_service_users.api.rest.users.dependencies import get_path_user
-from ml_service_users.api.rest.users.schemas import (
-    LoginRequest,
-    LoginResponse,
-    RegisterRequest,
-    UserResponse,
-    UserUpdateRequest,
-)
+from ml_service_users.api.rest.users.schemas import (LoginRequest,
+                                                     LoginResponse,
+                                                     RegisterRequest,
+                                                     UserResponse,
+                                                     UserUpdateRequest)
 from ml_service_users.database.service import Service
 from ml_service_users.utils import hash_password
 

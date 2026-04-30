@@ -2,12 +2,9 @@ PROD_COMPOSE := docker compose -f deploy/docker-compose.yml -f deploy/docker-com
 STAGE_COMPOSE := docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.stage.yml
 FIXTURE ?= database/database/fixtures/autotests.yaml
 
-WORKER_REPLICAS ?= 2
-
 .PHONY: \
 	build prod-up prod-down prod-migrate prod-downgrade prod-revision \
-	stage-up stage-down stage-migrate stage-downgrade stage-revision stage-fixtures \
-	stage-scale-workers stage-worker-logs
+	stage-up stage-down stage-migrate stage-downgrade stage-revision stage-fixtures
 
 prod-up:
 	$(PROD_COMPOSE) up -d --wait postgres rabbitmq
@@ -51,9 +48,3 @@ stage-revision:
 
 stage-fixtures:
 	$(STAGE_COMPOSE) run --rm backend database loadfixtures "$(FIXTURE)"
-
-stage-scale-workers:
-	$(STAGE_COMPOSE) up -d --no-deps --scale worker=$(WORKER_REPLICAS) worker
-
-stage-worker-logs:
-	$(STAGE_COMPOSE) logs -f worker

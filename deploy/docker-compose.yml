@@ -57,27 +57,6 @@ services:
       rabbitmq:
         condition: service_healthy
 
-  worker:
-    image: ml-service-worker:latest
-    build:
-      context: ../backend
-      dockerfile: worker/Dockerfile
-    env_file:
-      - ../backend/.env
-    volumes:
-      - backend-data:/var/lib/app/data
-      - hf-cache:/root/.cache/huggingface
-    deploy:
-      replicas: 2
-    restart: on-failure
-    networks:
-      - ml_network
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-
 volumes:
   backend-data:
   postgres-data:

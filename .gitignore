@@ -15,3 +15,13 @@ wheels/
 *.mx
 .vscode
 .pytest_cache
+
+
+debug/
+target/
+
+Cargo.lock
+
+**/*.rs.bk
+
+*.pdb

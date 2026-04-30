@@ -1,6 +1,7 @@
 import fastapi
 from ml_service_common.fastapi.dependencies.jwt import get_jwt_data
-from ml_service_common.fastapi.exceptions import HTTPForbidden, HTTPNotAuthenticated
+from ml_service_common.fastapi.exceptions import (HTTPForbidden,
+                                                  HTTPNotAuthenticated)
 from ml_service_common.jwt import JWTData
 from ml_service_common.sqlalchemy import SQLAlchemyService
 from ml_service_database_repository.models import User

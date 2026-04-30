@@ -1,9 +1,8 @@
 from collections.abc import AsyncGenerator
 
 import fastapi
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-
 from database_repository.dto.users import User
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from ml_service_common.auth import hash_password
 from ml_service_common.messaging.publisher import RabbitMQPublisher
 from ml_service_model.database.service import Service

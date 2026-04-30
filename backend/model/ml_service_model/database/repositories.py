@@ -1,22 +1,14 @@
+from database_repository.dto.users import AdminUser, User, UserRole
+from database_repository.models import (MLModelORM, MLTaskORM,
+                                        PredictionResultORM, UserORM,
+                                        UserRoleORM)
+from database_repository.models.task import TaskStatusORM
 from ml_service_model.database.service import Service
 from ml_service_model.domains.stored_model import StoredMLModel
 from ml_service_model.domains.task import MLTask, PredictionResult, TaskStatus
 from ml_service_model.interfaces.repositories import (
-    MLModelRepository,
-    MLTaskRepository,
-    PredictionResultRepository,
-)
+    MLModelRepository, MLTaskRepository, PredictionResultRepository)
 from sqlalchemy import select
-
-from database_repository.dto.users import AdminUser, User, UserRole
-from database_repository.models import (
-    MLModelORM,
-    MLTaskORM,
-    PredictionResultORM,
-    UserORM,
-    UserRoleORM,
-)
-from database_repository.models.task import TaskStatusORM
 
 
 def to_domain_user(orm: UserORM) -> User:

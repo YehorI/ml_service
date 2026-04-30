@@ -1,7 +1,6 @@
 import fastapi
 from ml_service_common.fastapi import FastAPIService
 from ml_service_common.messaging.publisher import RabbitMQPublisher
-
 from ml_service_model.api.router import router
 from ml_service_model.api.settings import Settings
 from ml_service_model.database.service import Service as DatabaseService
@@ -26,9 +25,12 @@ class Service(FastAPIService):
         return self._publisher
 
     def setup_app(self, app: fastapi.FastAPI) -> None:
-        from ml_service_model.api.rest.dependencies import InvalidPasswordError, UserNotFoundError
-        from ml_service_model.api.rest.tasks.dependencies import TaskAccessDeniedError, TaskNotFoundError
-        from ml_service_model.services.task_service import ModelInactiveError, ModelNotFoundError
+        from ml_service_model.api.rest.dependencies import (
+            InvalidPasswordError, UserNotFoundError)
+        from ml_service_model.api.rest.tasks.dependencies import (
+            TaskAccessDeniedError, TaskNotFoundError)
+        from ml_service_model.services.task_service import (ModelInactiveError,
+                                                            ModelNotFoundError)
 
         @app.exception_handler(UserNotFoundError)
         async def _user_not_found(_: fastapi.Request, exc: UserNotFoundError) -> fastapi.responses.JSONResponse:

@@ -1,5 +1,4 @@
 import fastapi
-
 from ml_service_model.api.rest.models.router import router as models_router
 from ml_service_model.api.rest.tasks.router import router as tasks_router
 
