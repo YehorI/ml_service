@@ -1,9 +1,8 @@
 from collections.abc import AsyncGenerator
 
 import fastapi
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-
 from database_repository.dto.users import User
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from ml_service_users.database.service import Service
 
 
@@ -20,10 +19,8 @@ async def get_current_user(
     credentials: HTTPBasicCredentials = fastapi.Depends(basic_auth),
     database: Service = fastapi.Depends(get_database),
 ) -> User:
-    from ml_service_users.api.rest.users.handlers import (
-        InvalidPasswordError,
-        UserNotFoundError,
-    )
+    from ml_service_users.api.rest.users.handlers import (InvalidPasswordError,
+                                                          UserNotFoundError)
     from ml_service_users.utils import hash_password
 
     user = await database.get_user_by_username(credentials.username)

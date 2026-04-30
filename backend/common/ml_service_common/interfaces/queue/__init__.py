@@ -1,4 +1,5 @@
-from .interfaces import QueueListenerInterface, QueuePullerInterface, QueuePusherInterface
+from .interfaces import (QueueListenerInterface, QueuePullerInterface,
+                         QueuePusherInterface)
 
 __all__ = (
     "QueueListenerInterface",

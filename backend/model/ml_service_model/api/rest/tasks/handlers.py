@@ -1,21 +1,23 @@
 from datetime import datetime, timezone
 
 import fastapi
-
 from database_repository.dto.users import User
 from ml_service_common.messaging.publisher import RabbitMQPublisher
-from ml_service_common.messaging.schemas import PredictTaskMessage
-from ml_service_model.api.rest.dependencies import get_current_user, get_database, get_publisher
+from ml_service_common.messaging.schemas import BillingRequestMessage
+from ml_service_model.api.rest.dependencies import (get_current_user,
+                                                    get_database,
+                                                    get_publisher)
 from ml_service_model.api.rest.tasks.dependencies import get_task
-from ml_service_model.api.rest.tasks.schemas import PredictRequest, TaskResponse
+from ml_service_model.api.rest.tasks.schemas import (PredictRequest,
+                                                     TaskResponse)
 from ml_service_model.database.repositories import (
-    SqlAlchemyAltMLModelRepository,
-    SqlAlchemyAltMLTaskRepository,
-    SqlAlchemyAltPredictionResultRepository,
-)
+    SqlAlchemyAltMLModelRepository, SqlAlchemyAltMLTaskRepository,
+    SqlAlchemyAltPredictionResultRepository)
 from ml_service_model.database.service import Service
 from ml_service_model.domains.task import MLTask
-from ml_service_model.services.task_service import ModelInactiveError, ModelNotFoundError, TaskService
+from ml_service_model.services.task_service import (ModelInactiveError,
+                                                    ModelNotFoundError,
+                                                    TaskService)
 
 
 async def predict(
@@ -34,11 +36,12 @@ async def predict(
     )
     task = await task_service.create_task(user=user, model_id=data.model_id, input_data=data.input_data)
 
-    message = PredictTaskMessage(
+    message = BillingRequestMessage(
         task_id=task.task_id,
-        model_id=task.model.model_id,
         user_id=user.user_id,
+        model_id=task.model.model_id,
         model_name=task.model.name,
+        cost_per_request=task.model.cost_per_request,
         input_data=data.input_data,
         submitted_at=datetime.now(timezone.utc),
     )

@@ -1,6 +1,7 @@
 import facet
 import fastapi
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
 
 from .settings import FastAPISettings
 
@@ -23,6 +24,13 @@ class FastAPIService(facet.AsyncioServiceMixin):
         app = fastapi.FastAPI(
             title=self._settings.title,
             version=self._settings.version,
+        )
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=self._settings.cors_origins,
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
         )
         app.service = self
         self.setup_app(app)

@@ -6,19 +6,22 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 COPY ./pyproject.toml ./uv.lock /app/
 
-COPY ./common /app/common
-COPY ./database /app/database
-COPY ./database_repository /app/database_repository
+COPY ./ml_service /app/ml_service
+COPY ./users /app/users
 COPY ./wallet /app/wallet
 COPY ./model /app/model
-COPY ./worker /app/worker
+COPY ./database /app/database
+COPY ./database_repository /app/database_repository
+COPY ./common /app/common
 
 RUN uv pip install --system --no-cache \
     -e ./common \
     -e ./database \
     -e ./database_repository \
+    -e ./users \
     -e ./wallet \
     -e ./model \
-    -e ./worker
+    -e ./ml_service
 
-CMD ["python", "-m", "ml_service_worker"]
+ENTRYPOINT ["python", "-m", "ml_service"]
+CMD ["run"]

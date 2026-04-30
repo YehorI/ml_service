@@ -1,9 +1,8 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field
-
 from ml_service_model.domains.task import MLTask, PredictionResult
+from pydantic import BaseModel, Field
 
 
 class PredictRequest(BaseModel):

@@ -2,23 +2,26 @@ import asyncio
 from collections.abc import Awaitable, Callable
 
 import aio_pika
-
-from ml_service_common.messaging.schemas import PredictTaskMessage
+import facet
 from ml_service_common.messaging.settings import MessagingSettings
 
-MessageHandler = Callable[[PredictTaskMessage], Awaitable[None]]
+MessageHandler = Callable[[bytes], Awaitable[None]]
 
 
-class RabbitMQConsumer:
+class RabbitMQConsumer(facet.AsyncioServiceMixin):
     def __init__(self, settings: MessagingSettings, handler: MessageHandler) -> None:
+        super().__init__()
         self._settings = settings
         self._handler = handler
         self._stop_event = asyncio.Event()
 
-    def stop(self) -> None:
+    async def start(self) -> None:
+        self.add_task(self._consume())
+
+    async def stop(self) -> None:
         self._stop_event.set()
 
-    async def run(self) -> None:
+    async def _consume(self) -> None:
         connection = await aio_pika.connect_robust(self._settings.url)
         async with connection:
             channel = await connection.channel()
@@ -29,5 +32,4 @@ class RabbitMQConsumer:
 
     async def _on_message(self, message: aio_pika.abc.AbstractIncomingMessage) -> None:
         async with message.process():
-            data = PredictTaskMessage.model_validate_json(message.body)
-            await self._handler(data)
+            await self._handler(message.body)

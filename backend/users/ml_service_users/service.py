@@ -1,5 +1,4 @@
 import facet
-
 from ml_service_users import api, database
 from ml_service_users.settings import Settings
 

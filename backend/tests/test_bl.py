@@ -2,20 +2,19 @@ from datetime import datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from ml_service_users.api.rest.users.handlers import (
-    InvalidPasswordError,
-    UserAlreadyExistsError,
-    UserNotFoundError,
-    login,
-    register,
-)
-from ml_service_users.api.rest.users.schemas import LoginRequest, RegisterRequest
-from ml_service_users.utils import hash_password
-from ml_service_wallet.domains.transaction import DebitTransaction, DepositTransaction
-from ml_service_wallet.domains.wallet import Wallet
-from ml_service_wallet.services.wallet_service import InsufficientFundsError, WalletService
-
 from database_repository.dto.users import User
+from ml_service_users.api.rest.users.handlers import (InvalidPasswordError,
+                                                      UserAlreadyExistsError,
+                                                      UserNotFoundError, login,
+                                                      register)
+from ml_service_users.api.rest.users.schemas import (LoginRequest,
+                                                     RegisterRequest)
+from ml_service_users.utils import hash_password
+from ml_service_wallet.domains.transaction import (DebitTransaction,
+                                                   DepositTransaction)
+from ml_service_wallet.domains.wallet import Wallet
+from ml_service_wallet.services.wallet_service import (InsufficientFundsError,
+                                                       WalletService)
 
 
 def _make_user(user_id: int = 1, username: str = "alice", password_hash: str = "hash123") -> User:

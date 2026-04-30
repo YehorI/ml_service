@@ -1,9 +1,8 @@
 import enum
 from typing import Any, AsyncIterable
 
-from ml_service_common.sqlalchemy.service import Service as SQLAlchemyService
-
 from database.fixtures.models import FixtureItem
+from ml_service_common.sqlalchemy.service import Service as SQLAlchemyService
 
 
 def _build_model_registry() -> dict[str, Any]:

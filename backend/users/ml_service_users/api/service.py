@@ -1,6 +1,5 @@
 import fastapi
 from ml_service_common.fastapi import FastAPIService
-
 from ml_service_users.api.router import router
 from ml_service_users.api.settings import Settings
 from ml_service_users.database.service import Service as DatabaseService

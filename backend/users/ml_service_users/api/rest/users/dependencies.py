@@ -1,7 +1,7 @@
 import fastapi
-
 from database_repository.dto.users import User
-from ml_service_users.api.rest.dependencies import get_current_user, get_database
+from ml_service_users.api.rest.dependencies import (get_current_user,
+                                                    get_database)
 from ml_service_users.database.service import Service
 
 

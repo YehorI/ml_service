@@ -1,17 +1,14 @@
-from ml_service_wallet.database.service import Service
-from ml_service_wallet.domains.transaction import DebitTransaction, DepositTransaction, Transaction
-from ml_service_wallet.domains.wallet import Wallet
-from ml_service_wallet.interfaces.repositories import BalanceRepository, TransactionRepository
-from sqlalchemy import select
-
 from database_repository.dto.users import AdminUser, User, UserRole
-from database_repository.models import (
-    TransactionORM,
-    TransactionTypeORM,
-    UserORM,
-    UserRoleORM,
-    WalletORM,
-)
+from database_repository.models import (TransactionORM, TransactionTypeORM,
+                                        UserORM, UserRoleORM, WalletORM)
+from ml_service_wallet.database.service import Service
+from ml_service_wallet.domains.transaction import (DebitTransaction,
+                                                   DepositTransaction,
+                                                   Transaction)
+from ml_service_wallet.domains.wallet import Wallet
+from ml_service_wallet.interfaces.repositories import (BalanceRepository,
+                                                       TransactionRepository)
+from sqlalchemy import select
 
 
 def to_domain_user(orm: UserORM) -> User:
