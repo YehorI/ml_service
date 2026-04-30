@@ -3,6 +3,25 @@ use crate::clients::api_client::ApiClient;
 use crate::clients::config::ApiConfig;
 use crate::credentials::load_credentials;
 
+#[cfg(target_arch = "wasm32")]
+mod sio {
+    use wasm_bindgen::prelude::*;
+
+    #[wasm_bindgen]
+    extern "C" {
+        pub type Socket;
+
+        #[wasm_bindgen(js_namespace = window, js_name = io)]
+        pub fn connect(url: &str) -> Socket;
+
+        #[wasm_bindgen(method)]
+        pub fn on(this: &Socket, event: &str, callback: &Closure<dyn Fn(JsValue)>);
+
+        #[wasm_bindgen(method)]
+        pub fn emit(this: &Socket, event: &str, data: &JsValue);
+    }
+}
+
 #[island]
 pub fn Dashboard(config: ApiConfig) -> impl IntoView {
     let config = StoredValue::new(config);
@@ -40,6 +59,25 @@ pub fn Dashboard(config: ApiConfig) -> impl IntoView {
 
     let load_on_mount = load_data.clone();
     Effect::new(move |_| { load_on_mount(); });
+
+    #[cfg(target_arch = "wasm32")]
+    {
+        use wasm_bindgen::prelude::*;
+        let load_on_update = load_data.clone();
+        Effect::new(move |_| {
+            let cfg = config.get_value();
+            let Some(creds) = load_credentials() else { return; };
+
+            let cb = Closure::wrap(Box::new(move |_data: JsValue| {
+                load_on_update();
+            }) as Box<dyn Fn(JsValue)>);
+
+            let socket = sio::connect(&cfg.model_base_url);
+            socket.emit("join", &JsValue::from_str(&creds.username));
+            socket.on("task_updated", &cb);
+            cb.forget();
+        });
+    }
 
     let handle_deposit = move |ev: leptos::ev::SubmitEvent| {
         ev.prevent_default();

@@ -8,7 +8,7 @@ use leptos_router::{
 use crate::clients::config::ApiConfig;
 use crate::components::auth::{LoginPage, RegisterPage};
 use crate::components::nav::NavAuthButtons;
-use crate::components::dashboard::Dashboard;
+use crate::dashboard::Dashboard;
 use crate::components::history::HistoryPage;
 use crate::components::predict::PredictPage;
 
@@ -22,6 +22,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <AutoReload options=options.clone()/>
                 <HydrationScripts options islands=true/>
                 <MetaTags/>
+                <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
             </head>
             <body>
                 <App/>
@@ -88,8 +89,7 @@ fn Home() -> impl IntoView {
             <p class="text-6xl mb-6">"🐦‍⬛"</p>
             <h1 class="text-4xl font-bold text-gray-900 mb-4">"ML Prediction Service"</h1>
             <p class="text-lg text-gray-500 mb-10 max-w-xl mx-auto">
-                "Submit your data to cutting-edge machine learning models and receive instant predictions. "
-                "Pay only for successful results."
+                "Let it cook. No broken eggs - no breakfast"
             </p>
             <div class="flex justify-center gap-4 mb-16">
                 <a href="/register" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors text-sm">

@@ -30,6 +30,6 @@ def get_service(settings: Settings | None = None) -> Service:
         worker_publisher=worker_publisher,
         settings=settings.api,
     )
-    handler = PredictMessageHandler(db=database_service)
+    handler = PredictMessageHandler(db=database_service, sio=api_service.sio)
     consumer = RabbitMQConsumer(settings=settings.predict_messaging, handler=handler.handle)
     return Service(api=api_service, consumer=consumer)

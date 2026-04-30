@@ -71,6 +71,6 @@ logs-backend:
 
 logs-worker:
 	$(COMPOSE) logs -f worker
-w
+
 test:
 	cd backend && uv run pytest

@@ -12,6 +12,7 @@ dependencies = [
     "typer>=0.12",
     "pydantic-settings>=2.0",
     "loguru>=0.7.3",
+    "python-socketio>=5.11",
 ]
 
 [build-system]

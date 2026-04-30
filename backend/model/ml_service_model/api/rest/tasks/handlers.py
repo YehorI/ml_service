@@ -21,6 +21,7 @@ from ml_service_model.services.task_service import (ModelInactiveError,
 
 
 async def predict(
+    background_tasks: fastapi.BackgroundTasks,
     data: PredictRequest = fastapi.Body(embed=False),
     user: User = fastapi.Depends(get_current_user),
     database: Service = fastapi.Depends(get_database),
@@ -45,7 +46,7 @@ async def predict(
         input_data=data.input_data,
         submitted_at=datetime.now(timezone.utc),
     )
-    await publisher.publish(message)
+    background_tasks.add_task(publisher.publish, message)
 
     return TaskResponse.from_domain(task)
 

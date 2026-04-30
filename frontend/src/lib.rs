@@ -2,6 +2,7 @@ pub mod app;
 pub mod clients;
 pub mod components;
 pub mod credentials;
+pub mod dashboard;
 pub mod error;
 
 #[cfg(feature = "hydrate")]

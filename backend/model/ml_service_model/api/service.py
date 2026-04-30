@@ -1,8 +1,10 @@
 import fastapi
+import socketio
 from ml_service_common.fastapi import FastAPIService
 from ml_service_common.messaging.publisher import RabbitMQPublisher
 from ml_service_model.api.router import router
 from ml_service_model.api.settings import Settings
+from ml_service_model.api.socketio import TaskNamespace
 from ml_service_model.database.service import Service as DatabaseService
 
 
@@ -18,6 +20,11 @@ class Service(FastAPIService):
         self._database = database
         self._publisher = publisher
         self._worker_publisher = worker_publisher
+        self._sio = socketio.AsyncServer(
+            async_mode="asgi",
+            cors_allowed_origins=settings.cors_origins,
+        )
+        self._sio.register_namespace(TaskNamespace("/"))
 
     @property
     def dependencies(self) -> list:
@@ -34,6 +41,14 @@ class Service(FastAPIService):
     @property
     def worker_publisher(self) -> RabbitMQPublisher:
         return self._worker_publisher
+
+    @property
+    def sio(self) -> socketio.AsyncServer:
+        return self._sio
+
+    def get_app(self) -> socketio.ASGIApp:
+        fastapi_app = super().get_app()
+        return socketio.ASGIApp(self._sio, other_asgi_app=fastapi_app)
 
     def setup_app(self, app: fastapi.FastAPI) -> None:
         from ml_service_model.api.rest.dependencies import (

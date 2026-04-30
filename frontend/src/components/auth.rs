@@ -61,6 +61,11 @@ pub fn LoginPage(config: ApiConfig) -> impl IntoView {
 
                 let creds = Credentials { username: u, password: p };
                 save_credentials(&creds);
+                #[cfg(target_arch = "wasm32")]
+                {
+                    let _ = web_sys::window()
+                        .and_then(|w| w.location().assign("/dashboard").ok());
+                }
                 set_success.set(true);
                 Ok(())
             }.await;

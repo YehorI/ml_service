@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import socketio
 from loguru import logger
 from ml_service_common.messaging.schemas import PredictRequestMessage
 from ml_service_common.sqlalchemy_alt.service import SQLAlchemyService
@@ -10,8 +11,9 @@ from ml_service_model.domains.task import MLTask, PredictionResult, TaskStatus
 
 
 class PredictMessageHandler:
-    def __init__(self, db: SQLAlchemyService) -> None:
+    def __init__(self, db: SQLAlchemyService, sio: socketio.AsyncServer) -> None:
         self._db = db
+        self._sio = sio
 
     async def handle(self, body: bytes) -> None:
         message = PredictRequestMessage.model_validate_json(body)
@@ -46,3 +48,9 @@ class PredictMessageHandler:
             task._completed_at = datetime.utcnow()  # noqa: SLF001
             await task_repo.update(task)
             logger.info(f"Task id={message.task_id} completed")
+
+        await self._sio.emit(
+            "task_updated",
+            {"task_id": task.task_id, "status": "completed"},
+            room=f"user_{task.user.username}",
+        )
