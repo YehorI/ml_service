@@ -57,6 +57,19 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  frontend:
+    image: ml-service-frontend:latest
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    env_file:
+      - ../frontend/.env
+    restart: on-failure
+    networks:
+      - ml_network
+    profiles:
+      - prod
+
   worker:
     image: ml-service-worker:latest
     build:

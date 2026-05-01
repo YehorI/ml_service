@@ -39,6 +39,7 @@ pub struct Task {
     pub id: i64,
     pub model_id: i64,
     pub status: TaskStatus,
+    pub input_data: Value,
     pub created_at: String,
     pub completed_at: Option<String>,
     pub result: Option<PredictionResult>,

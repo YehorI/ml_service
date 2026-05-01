@@ -20,6 +20,7 @@ class TaskResponse(BaseModel):
     id: int
     model_id: int
     status: str
+    input_data: dict
     created_at: datetime
     completed_at: datetime | None = None
     result: PredictionResultResponse | None = None
@@ -37,6 +38,7 @@ class TaskResponse(BaseModel):
             id=task.task_id,
             model_id=task.model.model_id,
             status=task.status.value,
+            input_data=task.input_data,
             created_at=task.created_at,
             completed_at=task.completed_at,
             result=result,

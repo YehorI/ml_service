@@ -1,24 +1,27 @@
 COMPOSE := docker compose -f deploy/docker-compose.yml
-PROD_COMPOSE := $(COMPOSE) -f deploy/docker-compose.prod.yml
+PROD_COMPOSE := $(COMPOSE) -f deploy/docker-compose.prod.yml --profile prod
 STAGE_COMPOSE := $(COMPOSE) -f deploy/docker-compose.stage.yml
 
 FIXTURE ?= database/database/fixtures/autotests.yaml
 WORKERS ?= 2
 
 .PHONY: \
-	build build-backend build-worker \
+	build build-backend build-worker build-frontend \
 	prod-up prod-down prod-migrate prod-downgrade prod-revision \
 	stage-build stage-up stage-reup stage-down \
 	stage-migrate stage-downgrade stage-revision stage-fixtures \
 	logs logs-worker logs-backend test
 
-build: build-backend build-worker
+build: build-backend build-worker build-frontend
 
 build-backend:
 	$(COMPOSE) build backend
 
 build-worker:
 	$(COMPOSE) build worker
+
+build-frontend:
+	$(COMPOSE) --profile prod build frontend
 
 prod-up:
 	$(PROD_COMPOSE) up -d --wait postgres rabbitmq

@@ -18,6 +18,15 @@ services:
       - "traefik.http.routers.model.service=model-svc"
       - "traefik.http.services.model-svc.loadbalancer.server.port=8002"
 
+  frontend:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.frontend.service=frontend-svc"
+      - "traefik.http.services.frontend-svc.loadbalancer.server.port=3000"
+
   traefik:
     image: traefik:v3.5
     volumes:

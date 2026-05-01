@@ -179,7 +179,15 @@ class SqlAlchemyAltMLTaskRepository(MLTaskRepository):
             model_orm = (
                 await self._service.session.execute(select(MLModelORM).where(MLModelORM.id == task.model_id))
             ).scalar_one()
-            result.append(to_domain_task(task, user, model_orm))
+            domain_task = to_domain_task(task, user, model_orm)
+            result_orm = (
+                await self._service.session.execute(
+                    select(PredictionResultORM).where(PredictionResultORM.task_id == task.id)
+                )
+            ).scalar_one_or_none()
+            if result_orm is not None:
+                domain_task._result = to_domain_prediction_result(result_orm)  # noqa: SLF001
+            result.append(domain_task)
         return result
 
     async def save(self, task: MLTask) -> MLTask:
