@@ -16,7 +16,8 @@ from ml_service_model.database.repositories import (
     SqlAlchemyAltPredictionResultRepository)
 from ml_service_model.database.service import Service
 from ml_service_model.domains.task import MLTask
-from ml_service_model.services.task_service import (ModelInactiveError,
+from ml_service_model.services.task_service import (InvalidInputDataError,
+                                                    ModelInactiveError,
                                                     ModelNotFoundError,
                                                     TaskService)
 
@@ -36,7 +37,14 @@ async def predict(
             model_repository=model_repo,
             result_repository=result_repo,
         )
-        task = await task_service.create_task(user=user, model_id=data.model_id, input_data=data.input_data)
+        try:
+            task = await task_service.create_task(user=user, model_id=data.model_id, input_data=data.input_data)
+        except ModelNotFoundError as exc:
+            raise fastapi.HTTPException(status_code=404, detail=str(exc))
+        except ModelInactiveError as exc:
+            raise fastapi.HTTPException(status_code=422, detail=str(exc))
+        except InvalidInputDataError as exc:
+            raise fastapi.HTTPException(status_code=422, detail=str(exc))
 
     message = BillingRequestMessage(
         task_id=task.task_id,

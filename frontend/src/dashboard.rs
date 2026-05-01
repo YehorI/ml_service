@@ -120,7 +120,7 @@ pub fn Dashboard(config: ApiConfig) -> impl IntoView {
                             None => "—".to_string(),
                         }}
                     </p>
-                    <a href="/history" class="mt-3 inline-block text-xs text-blue-600 hover:underline">"View history →"</a>
+                    <a href="/history" class="mt-3 inline-block text-xs text-blue-600 hover:underline">"View history -"</a>
                 </div>
             </div>
 
