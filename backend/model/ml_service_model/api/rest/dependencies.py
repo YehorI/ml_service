@@ -8,6 +8,10 @@ from ml_service_common.messaging.publisher import RabbitMQPublisher
 from ml_service_model.database.service import Service
 
 
+def get_database_service(request: fastapi.Request) -> Service:
+    return request.app.service.database
+
+
 async def get_database(request: fastapi.Request) -> AsyncGenerator[Service, None]:
     service: Service = request.app.service.database
     async with service.transaction():

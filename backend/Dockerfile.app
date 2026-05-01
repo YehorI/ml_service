@@ -14,7 +14,8 @@ COPY ./database /app/database
 COPY ./database_repository /app/database_repository
 COPY ./common /app/common
 
-RUN uv pip install --system --no-cache \
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv pip install --system \
     -e ./common \
     -e ./database \
     -e ./database_repository \

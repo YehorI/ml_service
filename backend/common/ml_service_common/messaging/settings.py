@@ -13,3 +13,7 @@ class BillingMessagingSettings(MessagingSettings):
 
 class WorkerMessagingSettings(MessagingSettings):
     queue_name: str = "ml.worker"
+
+
+class CompletedMessagingSettings(MessagingSettings):
+    queue_name: str = "ml.completed"

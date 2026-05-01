@@ -1,6 +1,9 @@
 use leptos::prelude::*;
 use serde_json::Value;
 
+#[cfg(target_arch = "wasm32")]
+use crate::socketio::client as sio;
+
 async fn wasm_sleep(ms: i32) {
     #[cfg(target_arch = "wasm32")]
     {
@@ -34,6 +37,18 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
     let (loading, set_loading) = signal(false);
     let (result_task, set_result_task) = signal(Option::<Task>::None);
     let (balance, set_balance) = signal(Option::<f64>::None);
+
+    #[cfg(target_arch = "wasm32")]
+    let socket = {
+        use std::rc::Rc;
+        use wasm_bindgen::prelude::*;
+        let cfg = config.get_value();
+        let sock = Rc::new(sio::connect(&cfg.model_base_url));
+        if let Some(creds) = load_credentials() {
+            sock.emit("join", &JsValue::from_str(&creds.username));
+        }
+        StoredValue::new_local(sock)
+    };
 
     Effect::new(move |_| {
         let cfg = config.get_value();
@@ -105,27 +120,46 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
                 let task_id = task.id;
                 set_result_task.set(Some(task));
 
-                for _ in 0..30 {
-                    wasm_sleep(2000).await;
+                #[cfg(target_arch = "wasm32")]
+                {
+                    use wasm_bindgen::prelude::*;
+                    let cb_client = client.clone();
+                    let cb = Closure::wrap(Box::new(move |data: JsValue| {
+                        let event_id = js_sys::Reflect::get(&data, &JsValue::from_str("task_id"))
+                            .ok()
+                            .and_then(|v| v.as_f64())
+                            .map(|v| v as i64);
 
+                        if event_id != Some(task_id) { return; }
 
-                    let updated = client.model().get_task(task_id).await
-                        .map_err(|e| e.to_string())?;
+                        let client = cb_client.clone();
+                        let set_result_task = set_result_task;
+                        let set_balance = set_balance;
+                        let set_loading = set_loading;
+                        leptos::task::spawn_local(async move {
+                            if let Ok(updated) = client.model().get_task(task_id).await {
+                                if let Some(ref result) = updated.result {
+                                    set_balance.set(Some(current_balance - result.credits_charged));
+                                }
+                                set_result_task.set(Some(updated));
+                            }
+                            set_loading.set(false);
+                        });
+                    }) as Box<dyn Fn(JsValue)>);
 
-                    let done = matches!(updated.status, TaskStatus::Completed | TaskStatus::Failed);
-                    if let Some(ref result) = updated.result {
-                        let new_balance = current_balance - result.credits_charged;
-                        set_balance.set(Some(new_balance));
-                    }
-                    set_result_task.set(Some(updated));
-                    if done { break; }
+                    socket.get_value().on("task_updated", &cb);
+                    cb.forget();
+                    return Ok(());
                 }
 
+                #[cfg(not(target_arch = "wasm32"))]
                 Ok(())
             }.await;
 
-            if let Err(e) = result { set_error.set(Some(e)); }
-            set_loading.set(false);
+            if let Err(e) = result {
+                set_error.set(Some(e));
+                set_loading.set(false);
+            }
         });
     };
 

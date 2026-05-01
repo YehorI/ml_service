@@ -1,18 +1,19 @@
 import facet
 from ml_service_common.messaging import RabbitMQConsumer, RabbitMQPublisher
 from ml_service_model import api, database
-from ml_service_model.messaging.handler import PredictMessageHandler
+from ml_service_model.messaging.handler import CompletedMessageHandler, PredictMessageHandler
 from ml_service_model.settings import Settings
 
 
 class Service(facet.AsyncioServiceMixin):
-    def __init__(self, api: api.Service, consumer: RabbitMQConsumer) -> None:
+    def __init__(self, api: api.Service, consumer: RabbitMQConsumer, completed_consumer: RabbitMQConsumer) -> None:
         self._api = api
         self._consumer = consumer
+        self._completed_consumer = completed_consumer
 
     @property
     def dependencies(self) -> list[facet.AsyncioServiceMixin]:
-        return [*super().dependencies, self._api, self._consumer]
+        return [*super().dependencies, self._api, self._consumer, self._completed_consumer]
 
     @property
     def api(self) -> api.Service:
@@ -30,6 +31,8 @@ def get_service(settings: Settings | None = None) -> Service:
         worker_publisher=worker_publisher,
         settings=settings.api,
     )
-    handler = PredictMessageHandler(db=database_service, sio=api_service.sio)
-    consumer = RabbitMQConsumer(settings=settings.predict_messaging, handler=handler.handle)
-    return Service(api=api_service, consumer=consumer)
+    predict_handler = PredictMessageHandler(db=database_service, sio=api_service.sio, worker_publisher=worker_publisher)
+    consumer = RabbitMQConsumer(settings=settings.predict_messaging, handler=predict_handler.handle)
+    completed_handler = CompletedMessageHandler(sio=api_service.sio)
+    completed_consumer = RabbitMQConsumer(settings=settings.completed_messaging, handler=completed_handler.handle)
+    return Service(api=api_service, consumer=consumer, completed_consumer=completed_consumer)

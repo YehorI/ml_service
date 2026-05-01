@@ -1,4 +1,4 @@
-from ml_service_common.messaging.settings import WorkerMessagingSettings
+from ml_service_common.messaging.settings import CompletedMessagingSettings, WorkerMessagingSettings
 from ml_service_common.sqlalchemy_alt.settings import SQLAlchemySettings
 from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -18,3 +18,4 @@ class Settings(BaseSettings):
     )
     database: DatabaseSettings = DatabaseSettings()
     worker_messaging: WorkerMessagingSettings = WorkerMessagingSettings()
+    completed_messaging: CompletedMessagingSettings = CompletedMessagingSettings()

@@ -1,4 +1,5 @@
 from ml_service_common.messaging.settings import (BillingMessagingSettings,
+                                                  CompletedMessagingSettings,
                                                   MessagingSettings,
                                                   WorkerMessagingSettings)
 from ml_service_model.api.settings import Settings as ApiSettings
@@ -12,3 +13,4 @@ class Settings(BaseSettings):
     billing_messaging: BillingMessagingSettings = BillingMessagingSettings()
     predict_messaging: MessagingSettings = MessagingSettings()
     worker_messaging: WorkerMessagingSettings = WorkerMessagingSettings()
+    completed_messaging: CompletedMessagingSettings = CompletedMessagingSettings()

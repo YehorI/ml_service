@@ -21,7 +21,17 @@ class PredictRequestMessage(BaseModel):
 
 
 class WorkerTaskMessage(BaseModel):
-    task_id: str
+    task_id: int
+    username: str
     features: dict
-    model: str
-    timestamp: datetime
+    model_name: str
+    model_type: str
+    provider_config: dict
+    cost_per_request: float
+
+
+class TaskCompletedMessage(BaseModel):
+    task_id: int
+    username: str
+    output_data: dict
+    credits_charged: float
