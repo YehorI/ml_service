@@ -18,6 +18,3 @@ services:
       - "${RABBITMQ_PORT:-5672}:5672"
       - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
 
-  worker:
-    volumes:
-      - ../backend:/app

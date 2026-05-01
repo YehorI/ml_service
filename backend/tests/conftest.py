@@ -1,5 +1,4 @@
 import pytest
-
 from database_repository.service import Service as DatabaseService
 
 

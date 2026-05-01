@@ -5,9 +5,9 @@ import pathlib
 import typer
 from alembic import command
 from alembic.config import Config
+from database.fixtures import (apply_fixtures, json_fixture_loader,
+                               yaml_fixture_loader)
 from ml_service_common.sqlalchemy.service import Service as SQLAlchemyService
-
-from database.fixtures import apply_fixtures, json_fixture_loader, yaml_fixture_loader
 
 
 def get_alembic_cfg() -> Config:

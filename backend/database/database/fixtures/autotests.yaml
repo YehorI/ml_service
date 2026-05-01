@@ -5,7 +5,7 @@ fields:
   id: 1
   username: admin
   email: admin@example.com
-  password_hash: "$2b$12$adminhashadminhashadminhashadminhashadminhashadminha"
+  password_hash: "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9"
   role: ADMIN
   created_at: 2026-01-01T00:00:00
 ---
@@ -66,23 +66,35 @@ model: ml_models
 fields:
   id: 1
   name: sentiment-analyzer
-  description: Classifies text sentiment as positive, negative, or neutral.
+  description: 'Classifies text sentiment as POSITIVE or NEGATIVE. Send {"text": "your text here"}.'
+  model_type: HUGGINGFACE
+  provider_config:
+    model_id: distilbert-base-uncased-finetuned-sst-2-english
+    task: text-classification
   cost_per_request: 1.0
   is_active: true
 ---
 model: ml_models
 fields:
   id: 2
-  name: image-classifier
-  description: Classifies images into 1000 ImageNet categories.
+  name: zero-shot-classifier
+  description: 'Classifies text into custom labels. Send {"text": "...", "candidate_labels": "sports,politics,tech"}.'
+  model_type: HUGGINGFACE
+  provider_config:
+    model_id: facebook/bart-large-mnli
+    task: zero-shot-classification
   cost_per_request: 2.5
   is_active: true
 ---
 model: ml_models
 fields:
   id: 3
-  name: translator-en-ru
-  description: Translates English text to Russian.
+  name: emotion-classifier
+  description: 'Detects emotion in text (joy, anger, sadness, etc). Send {"text": "your text here"}.'
+  model_type: HUGGINGFACE
+  provider_config:
+    model_id: bhadresh-savani/distilbert-base-uncased-emotion
+    task: text-classification
   cost_per_request: 1.5
   is_active: true
 ---
@@ -91,6 +103,10 @@ fields:
   id: 4
   name: deprecated-model
   description: Legacy model; no longer available.
+  model_type: HUGGINGFACE
+  provider_config:
+    model_id: distilbert-base-uncased-finetuned-sst-2-english
+    task: text-classification
   cost_per_request: 5.0
   is_active: false
 

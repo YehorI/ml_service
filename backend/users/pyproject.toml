@@ -2,7 +2,6 @@
 name = "ml_service_users"
 version = "0.1.0"
 description = ""
-readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "database-repository",

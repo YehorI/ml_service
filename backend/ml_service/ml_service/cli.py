@@ -4,7 +4,6 @@ import ml_service_model
 import ml_service_users
 import ml_service_wallet
 import typer
-
 from database.cli import get_cli as database_get_cli
 
 from .service import get_service
