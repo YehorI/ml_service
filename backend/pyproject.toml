@@ -32,6 +32,7 @@ members = [
     "users",
     "wallet",
     "model",
+    "worker",
 ]
 
 [build-system]

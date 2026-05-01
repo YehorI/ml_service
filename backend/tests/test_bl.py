@@ -2,16 +2,19 @@ from datetime import datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from ml_service_users.domains.user import User
-from ml_service_users.services.user_service import (
-    InvalidPasswordError,
-    UserAlreadyExistsError,
-    UserNotFoundError,
-    UserService,
-)
-from ml_service_wallet.domains.transaction import DebitTransaction, DepositTransaction
+from database_repository.dto.users import User
+from ml_service_users.api.rest.users.handlers import (InvalidPasswordError,
+                                                      UserAlreadyExistsError,
+                                                      UserNotFoundError, login,
+                                                      register)
+from ml_service_users.api.rest.users.schemas import (LoginRequest,
+                                                     RegisterRequest)
+from ml_service_users.utils import hash_password
+from ml_service_wallet.domains.transaction import (DebitTransaction,
+                                                   DepositTransaction)
 from ml_service_wallet.domains.wallet import Wallet
-from ml_service_wallet.services.wallet_service import InsufficientFundsError, WalletService
+from ml_service_wallet.services.wallet_service import (InsufficientFundsError,
+                                                       WalletService)
 
 
 def _make_user(user_id: int = 1, username: str = "alice", password_hash: str = "hash123") -> User:
@@ -27,65 +30,77 @@ def _make_wallet(user_id: int = 1, amount: float = 100.0) -> Wallet:
     return Wallet(user_id=user_id, amount=amount)
 
 
-class TestUserServiceRegister:
+class TestRegister:
     async def test_register_creates_user(self) -> None:
-        repo = AsyncMock()
-        repo.get_by_username.return_value = None
-        repo.get_by_email.return_value = None
-        repo.save.return_value = _make_user(user_id=42)
+        database = AsyncMock()
+        database.get_user_by_username.return_value = None
+        database.get_user_by_email.return_value = None
+        database.create_user.return_value = _make_user(user_id=42)
 
-        service = UserService(user_repository=repo)
-        result = await service.register("alice", "alice@example.com", "hash123")
+        result = await register(
+            data=RegisterRequest(username="alice", email="alice@example.com", password="hash123"),
+            database=database,
+        )
 
-        repo.save.assert_called_once()
-        assert result.user_id == 42
+        database.create_user.assert_called_once()
+        assert result.id == 42
         assert result.username == "alice"
 
     async def test_register_raises_if_username_taken(self) -> None:
-        repo = AsyncMock()
-        repo.get_by_username.return_value = _make_user()
+        database = AsyncMock()
+        database.get_user_by_username.return_value = _make_user()
 
-        service = UserService(user_repository=repo)
         with pytest.raises(UserAlreadyExistsError):
-            await service.register("alice", "new@example.com", "hash")
+            await register(
+                data=RegisterRequest(username="alice", email="new@example.com", password="hashed"),
+                database=database,
+            )
 
     async def test_register_raises_if_email_taken(self) -> None:
-        repo = AsyncMock()
-        repo.get_by_username.return_value = None
-        repo.get_by_email.return_value = _make_user()
+        database = AsyncMock()
+        database.get_user_by_username.return_value = None
+        database.get_user_by_email.return_value = _make_user()
 
-        service = UserService(user_repository=repo)
         with pytest.raises(UserAlreadyExistsError):
-            await service.register("newuser", "alice@example.com", "hash")
+            await register(
+                data=RegisterRequest(username="newuser", email="alice@example.com", password="hashed"),
+                database=database,
+            )
 
 
-class TestUserServiceAuthenticate:
-    async def test_authenticate_success(self) -> None:
-        user = _make_user(password_hash="correct_hash")
-        repo = AsyncMock()
-        repo.get_by_username.return_value = user
+class TestLogin:
+    async def test_login_success(self) -> None:
+        user = _make_user(password_hash=hash_password("correct"))
+        database = AsyncMock()
+        database.get_user_by_username.return_value = user
 
-        service = UserService(user_repository=repo)
-        result = await service.authenticate("alice", "correct_hash")
+        result = await login(
+            data=LoginRequest(username="alice", password="correct"),
+            database=database,
+        )
 
-        assert result is user
+        assert result.user.id == user.user_id
 
-    async def test_authenticate_wrong_password(self) -> None:
-        user = _make_user(password_hash="correct_hash")
-        repo = AsyncMock()
-        repo.get_by_username.return_value = user
+    async def test_login_wrong_password(self) -> None:
+        user = _make_user(password_hash=hash_password("correct"))
+        database = AsyncMock()
+        database.get_user_by_username.return_value = user
 
-        service = UserService(user_repository=repo)
         with pytest.raises(InvalidPasswordError):
-            await service.authenticate("alice", "wrong_hash")
+            await login(
+                data=LoginRequest(username="alice", password="wrong"),
+                database=database,
+            )
 
-    async def test_authenticate_user_not_found(self) -> None:
-        repo = AsyncMock()
-        repo.get_by_username.return_value = None
+    async def test_login_user_not_found(self) -> None:
+        database = AsyncMock()
+        database.get_user_by_username.return_value = None
 
-        service = UserService(user_repository=repo)
         with pytest.raises(UserNotFoundError):
-            await service.authenticate("ghost", "any_hash")
+            await login(
+                data=LoginRequest(username="ghost", password="any"),
+                database=database,
+            )
 
 
 class TestWalletServiceDeposit:

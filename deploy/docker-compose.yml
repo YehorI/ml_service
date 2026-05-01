@@ -35,15 +35,16 @@ services:
       - ml_network
 
   backend:
+    image: ml-service-backend:latest
     build:
       context: ../backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.app
     env_file:
       - ../backend/.env
     volumes:
       - backend-data:/var/lib/app/data
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -57,18 +58,24 @@ services:
         condition: service_healthy
 
   worker:
+    image: ml-service-worker:latest
     build:
       context: ../backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.worker
     env_file:
       - ../backend/.env
-    command: ["worker"]
-    deploy:
-      replicas: 2
+    environment:
+      HF_HOME: /cache/huggingface
+    volumes:
+      - hf-cache:/cache/huggingface
     restart: on-failure
     networks:
       - ml_network
+    deploy:
+      replicas: 2
     depends_on:
+      postgres:
+        condition: service_healthy
       rabbitmq:
         condition: service_healthy
 
@@ -76,6 +83,7 @@ volumes:
   backend-data:
   postgres-data:
   rabbitmq-data:
+  hf-cache:
 
 networks:
   ml_network:

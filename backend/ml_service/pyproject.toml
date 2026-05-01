@@ -2,19 +2,21 @@
 name = "ml-service"
 version = "0.1.0"
 description = ""
-readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "ml_service_common",
     "ml_service_users",
     "ml_service_wallet",
     "ml_service_model",
     "database",
     "database-repository",
+    "facet>=0.5",
     "typer>=0.12",
     "fastapi>=0.115",
     "uvicorn>=0.30",
     "email-validator>=2.2",
     "aio-pika>=9.4",
+    "loguru>=0.7.3",
 ]
 
 [build-system]
@@ -25,6 +27,7 @@ build-backend = "hatchling.build"
 packages = ["ml_service"]
 
 [tool.uv.sources]
+ml_service_common = { workspace = true }
 ml_service_users = { workspace = true }
 ml_service_wallet = { workspace = true }
 ml_service_model = { workspace = true }

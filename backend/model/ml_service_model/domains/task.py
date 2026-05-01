@@ -2,8 +2,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+from database_repository.dto.users import User
 from ml_service_model.domains.ml_model import MLModel
-from ml_service_users.domains.user import User
 
 
 class TaskStatus(Enum):

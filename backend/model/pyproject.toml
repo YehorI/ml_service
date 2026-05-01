@@ -4,9 +4,15 @@ version = "0.1.0"
 description = ""
 requires-python = ">=3.14"
 dependencies = [
-    "ml_service_users",
-    "ml_service_wallet",
+    "ml_service_common",
     "database-repository",
+    "facet>=0.5",
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "typer>=0.12",
+    "pydantic-settings>=2.0",
+    "loguru>=0.7.3",
+    "python-socketio>=5.11",
 ]
 
 [build-system]
@@ -17,6 +23,5 @@ build-backend = "hatchling.build"
 packages = ["ml_service_model"]
 
 [tool.uv.sources]
-ml_service_users = { workspace = true }
-ml_service_wallet = { workspace = true }
+ml_service_common = { workspace = true }
 database-repository = { workspace = true }

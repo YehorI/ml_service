@@ -1,10 +1,13 @@
 services:
   backend:
+    command: ["run"]
     volumes:
       - ../backend:/app
       - backend-data:/var/lib/app/data
     ports:
-      - "${BACKEND_PORT:-8000}:80"
+      - "${USERS_PORT:-8000}:8000"
+      - "${WALLET_PORT:-8001}:8001"
+      - "${MODEL_PORT:-8002}:8002"
 
   postgres:
     ports:
@@ -14,3 +17,4 @@ services:
     ports:
       - "${RABBITMQ_PORT:-5672}:5672"
       - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+

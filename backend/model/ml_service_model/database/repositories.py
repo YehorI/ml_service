@@ -1,22 +1,15 @@
+from database_repository.dto.users import AdminUser, User, UserRole
+from database_repository.models import (MLModelORM, MLTaskORM,
+                                        PredictionResultORM, UserORM,
+                                        UserRoleORM)
+from database_repository.models.ml_model import ModelTypeORM
+from database_repository.models.task import TaskStatusORM
 from ml_service_model.database.service import Service
 from ml_service_model.domains.stored_model import StoredMLModel
 from ml_service_model.domains.task import MLTask, PredictionResult, TaskStatus
 from ml_service_model.interfaces.repositories import (
-    MLModelRepository,
-    MLTaskRepository,
-    PredictionResultRepository,
-)
-from ml_service_users.domains.user import AdminUser, User, UserRole
+    MLModelRepository, MLTaskRepository, PredictionResultRepository)
 from sqlalchemy import select
-
-from database_repository.models import (
-    MLModelORM,
-    MLTaskORM,
-    PredictionResultORM,
-    UserORM,
-    UserRoleORM,
-)
-from database_repository.models.task import TaskStatusORM
 
 
 def to_domain_user(orm: UserORM) -> User:
@@ -61,6 +54,14 @@ class _PseudoModel:
     @property
     def is_active(self) -> bool:
         return bool(self._orm.is_active)
+
+    @property
+    def model_type(self) -> str:
+        return self._orm.model_type.value
+
+    @property
+    def model_config(self) -> dict:
+        return dict(self._orm.provider_config or {})
 
 
 def to_domain_task(orm: MLTaskORM, user: User, model_orm: MLModelORM) -> MLTask:
@@ -153,7 +154,15 @@ class SqlAlchemyAltMLTaskRepository(MLTaskRepository):
         model_orm = (
             await self._service.session.execute(select(MLModelORM).where(MLModelORM.id == task.model_id))
         ).scalar_one()
-        return to_domain_task(task, to_domain_user(user_orm), model_orm)
+        domain_task = to_domain_task(task, to_domain_user(user_orm), model_orm)
+        result_orm = (
+            await self._service.session.execute(
+                select(PredictionResultORM).where(PredictionResultORM.task_id == task_id)
+            )
+        ).scalar_one_or_none()
+        if result_orm is not None:
+            domain_task._result = to_domain_prediction_result(result_orm)  # noqa: SLF001
+        return domain_task
 
     async def list_by_user(self, user_id: int) -> list[MLTask]:
         user_orm = (

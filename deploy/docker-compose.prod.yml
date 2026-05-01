@@ -2,10 +2,21 @@ services:
   backend:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.backend.loadbalancer.server.port=80"
+      - "traefik.http.routers.users.rule=Host(`${DOMAIN}`) && PathPrefix(`/users`)"
+      - "traefik.http.routers.users.entrypoints=websecure"
+      - "traefik.http.routers.users.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.users.service=users-svc"
+      - "traefik.http.services.users-svc.loadbalancer.server.port=8000"
+      - "traefik.http.routers.wallet.rule=Host(`${DOMAIN}`) && PathPrefix(`/wallet`)"
+      - "traefik.http.routers.wallet.entrypoints=websecure"
+      - "traefik.http.routers.wallet.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.wallet.service=wallet-svc"
+      - "traefik.http.services.wallet-svc.loadbalancer.server.port=8001"
+      - "traefik.http.routers.model.rule=Host(`${DOMAIN}`) && PathPrefix(`/model`)"
+      - "traefik.http.routers.model.entrypoints=websecure"
+      - "traefik.http.routers.model.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.model.service=model-svc"
+      - "traefik.http.services.model-svc.loadbalancer.server.port=8002"
 
   traefik:
     image: traefik:v3.5
