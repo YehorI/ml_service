@@ -12,14 +12,27 @@ from ml_service_users.database.service import Service
 from ml_service_users.utils import hash_password
 
 
+class UserAlreadyExistsError(fastapi.HTTPException):
+    def __init__(self, detail: str = "User already exists."):
+        super().__init__(status_code=409, detail=detail)
+
+
+class UserNotFoundError(HTTPNotFound):
+    pass
+
+
+class InvalidPasswordError(HTTPNotAuthenticated):
+    pass
+
+
 async def register(
     data: RegisterRequest = fastapi.Body(embed=False),
     database: Service = fastapi.Depends(get_database),
 ) -> UserResponse:
     if await database.get_user_by_username(data.username) is not None:
-        raise fastapi.HTTPException(status_code=409, detail="Username already taken.")
+        raise UserAlreadyExistsError("Username already taken.")
     if await database.get_user_by_email(data.email) is not None:
-        raise fastapi.HTTPException(status_code=409, detail="Email already registered.")
+        raise UserAlreadyExistsError("Email already registered.")
 
     user = await database.create_user(
         username=data.username,
@@ -35,9 +48,9 @@ async def login(
 ) -> LoginResponse:
     user = await database.get_user_by_username(data.username)
     if user is None:
-        raise HTTPNotFound()
+        raise UserNotFoundError()
     if not user.verify_password(hash_password(data.password)):
-        raise HTTPNotAuthenticated()
+        raise InvalidPasswordError()
     return LoginResponse(user=UserResponse.from_db_model(user))
 
 
