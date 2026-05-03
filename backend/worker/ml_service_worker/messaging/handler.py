@@ -41,7 +41,10 @@ class WorkerMessageHandler:
 
         if hf_task == "zero-shot-classification":
             raw_labels = features.get("candidate_labels", "")
-            candidate_labels = [l.strip() for l in raw_labels.split(",") if l.strip()] if raw_labels else ["positive", "negative"]
+            if isinstance(raw_labels, list):
+                candidate_labels = [l.strip() for l in raw_labels if l.strip()] or ["positive", "negative"]
+            else:
+                candidate_labels = [l.strip() for l in raw_labels.split(",") if l.strip()] if raw_labels else ["positive", "negative"]
             result = await asyncio.to_thread(pipeline, text, candidate_labels)
         else:
             result = await asyncio.to_thread(pipeline, text)
@@ -75,6 +78,11 @@ class WorkerMessageHandler:
                 if task_orm is not None:
                     task_orm.status = TaskStatusORM.FAILED
                     task_orm.completed_at = datetime.utcnow()
+            await self._completed_publisher.publish(TaskCompletedMessage(
+                task_id=message.task_id,
+                username=message.username,
+                status="failed",
+            ))
             return
 
         logger.info(f"[{self._worker_id}] task_id={message.task_id} output={output}")

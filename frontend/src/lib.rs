@@ -5,6 +5,7 @@ pub mod credentials;
 pub mod dashboard;
 pub mod error;
 pub mod socketio;
+pub mod utils;
 
 #[cfg(feature = "hydrate")]
 #[wasm_bindgen::prelude::wasm_bindgen]

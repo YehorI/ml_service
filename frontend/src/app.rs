@@ -7,6 +7,7 @@ use leptos_router::{
 
 use crate::clients::config::ApiConfig;
 use crate::components::auth::{LoginPage, RegisterPage};
+use crate::components::home::HomeCta;
 use crate::components::nav::NavAuthButtons;
 use crate::dashboard::Dashboard;
 use crate::components::history::HistoryPage;
@@ -34,6 +35,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
 #[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
+    provide_context(ApiConfig::from_env().unwrap_or_default());
 
     view! {
         <Stylesheet id="leptos" href="/pkg/ml-frontend.css"/>
@@ -44,11 +46,11 @@ pub fn App() -> impl IntoView {
             <main>
                 <Routes fallback=|| view! { <NotFound/> }>
                     <Route path=StaticSegment("") view=Home/>
-                    <Route path=StaticSegment("login") view=LoginRoute/>
-                    <Route path=StaticSegment("register") view=RegisterRoute/>
-                    <Route path=StaticSegment("dashboard") view=DashboardRoute/>
-                    <Route path=StaticSegment("predict") view=PredictRoute/>
-                    <Route path=StaticSegment("history") view=HistoryRoute/>
+                    <Route path=StaticSegment("login") view=|| view! { <LoginPage config=expect_context()/> }/>
+                    <Route path=StaticSegment("register") view=|| view! { <RegisterPage config=expect_context()/> }/>
+                    <Route path=StaticSegment("dashboard") view=|| view! { <Dashboard config=expect_context()/> }/>
+                    <Route path=StaticSegment("predict") view=|| view! { <PredictPage config=expect_context()/> }/>
+                    <Route path=StaticSegment("history") view=|| view! { <HistoryPage config=expect_context()/> }/>
                 </Routes>
             </main>
         </Router>
@@ -71,15 +73,11 @@ fn Nav() -> impl IntoView {
             <A href="/history" attr:class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
                 "History"
             </A>
-            <div class="ml-auto flex gap-3">
+            <div class="ml-auto">
                 <NavAuthButtons/>
             </div>
         </nav>
     }
-}
-
-fn get_config() -> ApiConfig {
-    ApiConfig::from_env().unwrap_or_default()
 }
 
 #[component]
@@ -91,14 +89,7 @@ fn Home() -> impl IntoView {
             <p class="text-lg text-gray-500 mb-10 max-w-xl mx-auto">
                 "Let it cook. No broken eggs - no breakfast"
             </p>
-            <div class="flex justify-center gap-4 mb-16">
-                <a href="/register" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors text-sm">
-                    "Get Started"
-                </a>
-                <a href="/login" class="px-8 py-3 border border-gray-300 hover:border-gray-400 text-gray-700 font-semibold rounded-xl transition-colors text-sm">
-                    "Sign In"
-                </a>
-            </div>
+            <HomeCta/>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
@@ -119,31 +110,6 @@ fn Home() -> impl IntoView {
             </div>
         </div>
     }
-}
-
-#[component]
-fn LoginRoute() -> impl IntoView {
-    view! { <LoginPage config=get_config()/> }
-}
-
-#[component]
-fn RegisterRoute() -> impl IntoView {
-    view! { <RegisterPage config=get_config()/> }
-}
-
-#[component]
-fn DashboardRoute() -> impl IntoView {
-    view! { <Dashboard config=get_config()/> }
-}
-
-#[component]
-fn PredictRoute() -> impl IntoView {
-    view! { <PredictPage config=get_config()/> }
-}
-
-#[component]
-fn HistoryRoute() -> impl IntoView {
-    view! { <HistoryPage config=get_config()/> }
 }
 
 #[component]

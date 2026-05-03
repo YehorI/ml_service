@@ -25,7 +25,7 @@ class PredictMessageHandler:
             if task is None:
                 logger.error(f"Task id={message.task_id} not found, skipping")
                 return
-            task._status = TaskStatus.PROCESSING  # noqa: SLF001
+            task._status = TaskStatus.PROCESSING
             await task_repo.update(task)
 
         worker_msg = WorkerTaskMessage(
@@ -51,7 +51,7 @@ class CompletedMessageHandler:
         try:
             await self._sio.emit(
                 "task_updated",
-                {"task_id": message.task_id, "status": "completed"},
+                {"task_id": message.task_id, "status": message.status},
                 room=f"user_{message.username}",
             )
         except Exception:

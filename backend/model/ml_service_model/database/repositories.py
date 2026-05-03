@@ -107,7 +107,7 @@ class SqlAlchemyAltMLModelRepository(MLModelRepository):
 
     async def list_active(self) -> list[StoredMLModel]:
         rows = (
-            await self._service.session.execute(select(MLModelORM).where(MLModelORM.is_active == True))  # noqa: E712
+            await self._service.session.execute(select(MLModelORM).where(MLModelORM.is_active))
         ).scalars().all()
         return [
             StoredMLModel(
@@ -161,7 +161,7 @@ class SqlAlchemyAltMLTaskRepository(MLTaskRepository):
             )
         ).scalar_one_or_none()
         if result_orm is not None:
-            domain_task._result = to_domain_prediction_result(result_orm)  # noqa: SLF001
+            domain_task._result = to_domain_prediction_result(result_orm)
         return domain_task
 
     async def list_by_user(self, user_id: int) -> list[MLTask]:
@@ -186,7 +186,7 @@ class SqlAlchemyAltMLTaskRepository(MLTaskRepository):
                 )
             ).scalar_one_or_none()
             if result_orm is not None:
-                domain_task._result = to_domain_prediction_result(result_orm)  # noqa: SLF001
+                domain_task._result = to_domain_prediction_result(result_orm)
             result.append(domain_task)
         return result
 

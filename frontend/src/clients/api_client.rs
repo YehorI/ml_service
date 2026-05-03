@@ -23,14 +23,15 @@ impl ApiClient {
     }
 
     pub fn with_credentials(config: &ApiConfig, creds: &Credentials) -> ClientResult<Self> {
-        let auth = creds.to_basic_header();
-        let mut headers = HashMap::new();
-        headers.insert("Authorization".to_string(), auth);
-
+        let auth_header = || {
+            let mut h = HashMap::new();
+            h.insert("Authorization".to_string(), creds.to_basic_header());
+            h
+        };
         Ok(Self {
-            users: UsersClient::new(BaseRestClient::new(&config.users_base_url, Some(headers.clone()), config.timeout_seconds)?),
-            wallet: WalletClient::new(BaseRestClient::new(&config.wallet_base_url, Some(headers.clone()), config.timeout_seconds)?),
-            model: ModelClient::new(BaseRestClient::new(&config.model_base_url, Some(headers), config.timeout_seconds)?),
+            users: UsersClient::new(BaseRestClient::new(&config.users_base_url, Some(auth_header()), config.timeout_seconds)?),
+            wallet: WalletClient::new(BaseRestClient::new(&config.wallet_base_url, Some(auth_header()), config.timeout_seconds)?),
+            model: ModelClient::new(BaseRestClient::new(&config.model_base_url, Some(auth_header()), config.timeout_seconds)?),
         })
     }
 

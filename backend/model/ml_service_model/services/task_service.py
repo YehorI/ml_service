@@ -40,5 +40,5 @@ class TaskService:
         if not isinstance(input_data, dict):
             raise InvalidInputDataError("Input data must be a JSON object", details=["expected JSON object"])
 
-        task = MLTask(task_id=0, user=user, model=model, input_data=input_data)  # type: ignore[arg-type]
+        task = MLTask(task_id=0, user=user, model=model, input_data=input_data)
         return await self._task_repository.save(task)

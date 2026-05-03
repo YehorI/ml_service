@@ -19,8 +19,7 @@ class TestGetBalance:
     def test_bob_has_independent_balance(self, alice: UserClient, bob: UserClient) -> None:
         alice_balance = alice.get_balance().json()["amount"]
         bob_balance = bob.get_balance().json()["amount"]
-        assert alice_balance != bob_balance or True  # balances are per-user (different wallets)
-        # the real assertion: both calls succeed with their own wallet_id
+        assert alice_balance != bob_balance or True
         assert alice.get_balance().json()["user_id"] != bob.get_balance().json()["user_id"]
 
     def test_anon_cannot_get_balance(self, anon: UserClient) -> None:

@@ -1,9 +1,10 @@
 use leptos::prelude::*;
 use crate::clients::api_client::ApiClient;
 use crate::clients::config::ApiConfig;
-use crate::clients::model::models::{Task, TaskStatus};
+use crate::clients::model::models::Task;
 use crate::clients::wallet::models::Transaction;
 use crate::credentials::load_credentials;
+use crate::utils::{fmt_datetime, status_badge_class, status_label};
 
 #[island]
 pub fn HistoryPage(config: ApiConfig) -> impl IntoView {
@@ -92,7 +93,7 @@ pub fn HistoryPage(config: ApiConfig) -> impl IntoView {
                                         let status_label = if tx.is_applied { "Applied" } else { "Pending" };
                                         view! {
                                             <tr class="border-b border-gray-50 hover:bg-gray-50">
-                                                <td class="px-4 py-3 text-gray-500 text-xs">{tx.created_at.chars().take(19).collect::<String>()}</td>
+                                                <td class="px-4 py-3 text-gray-500 text-xs">{fmt_datetime(&tx.created_at)}</td>
                                                 <td class="px-4 py-3 capitalize">{tx.transaction_type}</td>
                                                 <td class=format!("px-4 py-3 text-right {}", amount_class)>
                                                     {format!("{}{:.2}", amount_sign, tx.amount)}
@@ -124,23 +125,14 @@ pub fn HistoryPage(config: ApiConfig) -> impl IntoView {
                                 </thead>
                                 <tbody>
                                     {ts.into_iter().map(|task| {
-                                        let status_class = match task.status {
-                                            TaskStatus::Completed => "text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full text-xs",
-                                            TaskStatus::Failed => "text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full text-xs",
-                                            _ => "text-yellow-700 bg-yellow-50 border border-yellow-200 px-2 py-0.5 rounded-full text-xs",
-                                        };
-                                        let status_label = match task.status {
-                                            TaskStatus::Completed => "Completed",
-                                            TaskStatus::Failed => "Failed",
-                                            TaskStatus::Processing => "Processing",
-                                            _ => "Pending",
-                                        };
+                                        let badge = format!("px-2 py-0.5 rounded-full text-xs border {}", status_badge_class(&task.status));
+                                        let label = status_label(&task.status);
                                         let credits = task.result.as_ref().map(|r| format!("{:.2}", r.credits_charged)).unwrap_or("—".to_string());
                                         view! {
                                             <tr class="border-b border-gray-50 hover:bg-gray-50">
-                                                <td class="px-4 py-3 text-gray-500 text-xs">{task.created_at.chars().take(19).collect::<String>()}</td>
+                                                <td class="px-4 py-3 text-gray-500 text-xs">{fmt_datetime(&task.created_at)}</td>
                                                 <td class="px-4 py-3 text-gray-700 font-mono text-xs">{"#"}{task.id.to_string()}</td>
-                                                <td class="px-4 py-3"><span class=status_class>{status_label}</span></td>
+                                                <td class="px-4 py-3"><span class=badge>{label}</span></td>
                                                 <td class="px-4 py-3 text-right text-gray-700">{credits}</td>
                                             </tr>
                                         }

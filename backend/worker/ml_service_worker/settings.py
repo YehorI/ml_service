@@ -11,7 +11,6 @@ class DatabaseSettings(SQLAlchemySettings):
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_nested_delimiter="__", extra="ignore")
 
-    # Falls back to container's HOSTNAME if WORKER_ID is not set
     worker_id: str = Field(
         default="worker",
         validation_alias=AliasChoices("WORKER_ID", "HOSTNAME"),

@@ -34,33 +34,34 @@ pub fn Dashboard(config: ApiConfig) -> impl IntoView {
                     }
                     match client.model().list_tasks().await {
                         Ok(tasks) => set_task_count.set(Some(tasks.len())),
-                        Err(_) => {}
+                        Err(e) => set_error.set(Some(format!("Could not load request count: {}", e))),
                     }
                 }
             }
         });
     };
 
-    let load_on_mount = load_data.clone();
-    Effect::new(move |_| { load_on_mount(); });
+    {
+        let load_for_mount = load_data.clone();
+        Effect::new(move |_| { load_for_mount(); });
+    }
 
     #[cfg(target_arch = "wasm32")]
     {
         use wasm_bindgen::prelude::*;
-        let load_on_update = load_data.clone();
-        Effect::new(move |_| {
-            let cfg = config.get_value();
-            let Some(creds) = load_credentials() else { return; };
-
+        let cfg = config.get_value();
+        if let Some(creds) = load_credentials() {
+            let load_for_socket = load_data.clone();
             let cb = Closure::wrap(Box::new(move |_data: JsValue| {
-                load_on_update();
+                load_for_socket();
             }) as Box<dyn Fn(JsValue)>);
-
             let socket = sio::connect(&cfg.model_base_url);
             socket.emit("join", &JsValue::from_str(&creds.username));
             socket.on("task_updated", &cb);
-            cb.forget();
-        });
+            let socket_sv = StoredValue::new_local(socket);
+            StoredValue::new_local(cb);
+            on_cleanup(move || socket_sv.with_value(|s| s.disconnect()));
+        }
     }
 
     let handle_deposit = move |ev: leptos::ev::SubmitEvent| {
@@ -98,10 +99,15 @@ pub fn Dashboard(config: ApiConfig) -> impl IntoView {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <p class="text-sm text-gray-500 mb-1">"Current Balance"</p>
-                    <p class="text-4xl font-bold text-gray-900 mb-1">
+                    <p
+                        class="text-4xl font-bold mb-1 transition-colors"
+                        class:text-gray-900=move || balance.get().is_some()
+                        class:text-gray-300=move || balance.get().is_none()
+                        class:animate-pulse=move || balance.get().is_none()
+                    >
                         {move || match balance.get() {
                             Some(b) => format!("{:.2} credits", b),
-                            None => "Loading…".to_string(),
+                            None => "——".to_string(),
                         }}
                     </p>
                     <button
@@ -114,13 +120,18 @@ pub fn Dashboard(config: ApiConfig) -> impl IntoView {
 
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <p class="text-sm text-gray-500 mb-1">"Total ML Requests"</p>
-                    <p class="text-4xl font-bold text-gray-900">
+                    <p
+                        class="text-4xl font-bold transition-colors"
+                        class:text-gray-900=move || task_count.get().is_some()
+                        class:text-gray-300=move || task_count.get().is_none()
+                        class:animate-pulse=move || task_count.get().is_none()
+                    >
                         {move || match task_count.get() {
                             Some(n) => n.to_string(),
-                            None => "—".to_string(),
+                            None => "——".to_string(),
                         }}
                     </p>
-                    <a href="/history" class="mt-3 inline-block text-xs text-blue-600 hover:underline">"View history -"</a>
+                    <a href="/history" class="mt-3 inline-block text-xs text-blue-600 hover:underline">"View history →"</a>
                 </div>
             </div>
 

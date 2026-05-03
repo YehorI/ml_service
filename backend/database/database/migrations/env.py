@@ -21,7 +21,6 @@ def get_url() -> str:
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode (no DB connection needed)."""
-    # Offline mode uses a sync-compatible URL (swap asyncpg - psycopg2)
     url = get_url().replace("+asyncpg", "+psycopg2")
     context.configure(
         url=url,
@@ -33,7 +32,7 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-def do_run_migrations(connection) -> None:  # type: ignore[type-arg]
+def do_run_migrations(connection) -> None:
     context.configure(connection=connection, target_metadata=target_metadata)
     with context.begin_transaction():
         context.run_migrations()

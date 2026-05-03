@@ -33,5 +33,6 @@ class WorkerTaskMessage(BaseModel):
 class TaskCompletedMessage(BaseModel):
     task_id: int
     username: str
-    output_data: dict
-    credits_charged: float
+    status: str = "completed"
+    output_data: dict = Field(default_factory=dict)
+    credits_charged: float = 0.0

@@ -14,4 +14,4 @@ class SQLAlchemySettings(BaseSettings):
     pool_recycle: PositiveInt = Field(
         default=60,
         validation_alias=AliasChoices("DATABASE__POOL_RECYCLE", "pool_recycle"),
-    )  # in seconds: 1 minute
+    )

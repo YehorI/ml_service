@@ -8,21 +8,155 @@ use crate::clients::api_client::ApiClient;
 use crate::clients::config::ApiConfig;
 use crate::clients::model::models::{MlModel, PredictRequest, Task, TaskStatus};
 use crate::credentials::load_credentials;
+use crate::utils::{fmt_date, fmt_datetime, status_badge_class, status_label};
 
-fn status_badge_class(status: &TaskStatus) -> &'static str {
-    match status {
-        TaskStatus::Completed => "text-green-700 bg-green-50 border border-green-200",
-        TaskStatus::Failed    => "text-red-700 bg-red-50 border border-red-200",
-        _                     => "text-yellow-700 bg-yellow-50 border border-yellow-200",
+#[component]
+fn TaskResultPanel(result_task: ReadSignal<Option<Task>>) -> impl IntoView {
+    view! {
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex-1">
+            <h2 class="text-base font-semibold text-gray-800 mb-5">"Result"</h2>
+
+            {move || match result_task.get() {
+                None => view! {
+                    <div class="flex flex-col items-center justify-center h-48 text-gray-300 select-none">
+                        <p class="text-5xl mb-3">"🥚"</p>
+                        <p class="text-sm">"Submit a prediction to see results"</p>
+                    </div>
+                }.into_any(),
+
+                Some(task) => {
+                    let is_pending = matches!(task.status, TaskStatus::Pending | TaskStatus::Processing);
+                    view! {
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <span class=format!(
+                                    "inline-block px-3 py-1 rounded-full text-xs font-semibold {}",
+                                    status_badge_class(&task.status)
+                                )>
+                                    {status_label(&task.status)}
+                                </span>
+                                <span class="text-xs text-gray-400 font-mono">"#"{task.id.to_string()}</span>
+                            </div>
+
+                            {if is_pending {
+                                view! {
+                                    <div class="flex items-center gap-2 text-sm text-yellow-600">
+                                        <span class="animate-spin inline-block">"⟳"</span>
+                                        "Processing your request…"
+                                    </div>
+                                }.into_any()
+                            } else {
+                                view! { <div/> }.into_any()
+                            }}
+
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">"Input"</p>
+                                <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm font-mono overflow-x-auto whitespace-pre-wrap">
+                                    {serde_json::to_string_pretty(&task.input_data).unwrap_or_default()}
+                                </pre>
+                            </div>
+
+                            {task.result.map(|r| view! {
+                                <div class="space-y-3">
+                                    <div>
+                                        <p class="text-xs text-gray-500 mb-1">"Credits charged"</p>
+                                        <p class="text-xl font-bold text-gray-900">{format!("{:.2}", r.credits_charged)}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 mb-1">"Output"</p>
+                                        <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm font-mono overflow-x-auto whitespace-pre-wrap">
+                                            {serde_json::to_string_pretty(&r.output_data).unwrap_or_default()}
+                                        </pre>
+                                    </div>
+                                </div>
+                            })}
+
+                            <p class="text-xs text-gray-400">{fmt_datetime(&task.created_at)}</p>
+                        </div>
+                    }.into_any()
+                }
+            }}
+        </div>
     }
 }
 
-fn status_label(status: &TaskStatus) -> &'static str {
-    match status {
-        TaskStatus::Completed  => "Completed",
-        TaskStatus::Failed     => "Failed",
-        TaskStatus::Processing => "Processing…",
-        _                      => "Pending…",
+#[component]
+fn HistoryDrawer(
+    history: ReadSignal<Vec<Task>>,
+    history_open: ReadSignal<bool>,
+    history_loading: ReadSignal<bool>,
+    set_history_open: WriteSignal<bool>,
+    set_result_task: WriteSignal<Option<Task>>,
+    #[prop(into)] on_load: Callback<()>,
+) -> impl IntoView {
+    let toggle = move |_| {
+        let next = !history_open.get_untracked();
+        set_history_open.set(next);
+        if next && history.get_untracked().is_empty() {
+            on_load.run(());
+        }
+    };
+
+    view! {
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <button
+                class="w-full flex items-center justify-between px-6 py-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                on:click=toggle
+            >
+                <span>"Recent Requests"</span>
+                <span class="text-gray-400 text-xs">
+                    {move || if history_open.get() { "▲ Hide" } else { "▼ Show" }}
+                </span>
+            </button>
+
+            {move || if history_open.get() {
+                view! {
+                    <div class="border-t border-gray-100">
+                        {move || if history_loading.get() {
+                            view! {
+                                <p class="px-6 py-8 text-sm text-gray-400">"Loading…"</p>
+                            }.into_any()
+                        } else if history.get().is_empty() {
+                            view! {
+                                <p class="px-6 py-8 text-sm text-gray-400">"No requests yet."</p>
+                            }.into_any()
+                        } else {
+                            view! {
+                                <ul class="divide-y divide-gray-50 max-h-72 overflow-y-auto">
+                                    {history.get().into_iter().map(|task| {
+                                        let badge = status_badge_class(&task.status);
+                                        let label = status_label(&task.status);
+                                        let credits = task.result.as_ref()
+                                            .map(|r| format!("{:.2} cr", r.credits_charged))
+                                            .unwrap_or_default();
+                                        let id_str = task.id.to_string();
+                                        let date_str = fmt_date(&task.created_at);
+                                        view! {
+                                            <li
+                                                class="flex items-center gap-3 px-6 py-3 hover:bg-gray-50 cursor-pointer transition-colors"
+                                                on:click=move |_| set_result_task.set(Some(task.clone()))
+                                            >
+                                                <span class=format!("px-2 py-0.5 rounded-full text-xs font-medium border {}", badge)>
+                                                    {label}
+                                                </span>
+                                                <span class="text-xs text-gray-400 font-mono flex-1">"#"{id_str}</span>
+                                                <span class="text-xs text-gray-500">{credits}</span>
+                                                <span class="text-xs text-gray-300">{date_str}</span>
+                                            </li>
+                                        }
+                                    }).collect_view()}
+                                </ul>
+                                <div class="px-6 py-3 border-t border-gray-50">
+                                    <a href="/history" class="text-xs text-blue-600 hover:underline">"View all →"</a>
+                                </div>
+                            }.into_any()
+                        }}
+                    </div>
+                }.into_any()
+            } else {
+                view! { <div/> }.into_any()
+            }}
+        </div>
     }
 }
 
@@ -31,27 +165,32 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
     let config = StoredValue::new(config);
 
     // Form state
-    let (models, set_models)                   = signal(Vec::<MlModel>::new());
+    let (models, set_models)                       = signal(Vec::<MlModel>::new());
+    let (models_loading, set_models_loading)       = signal(true);
     let (selected_model_id, set_selected_model_id) = signal(Option::<i64>::None);
-    let (input_json, set_input_json)           = signal(String::from("{}"));
-    let (balance, set_balance)                 = signal(Option::<f64>::None);
+    let (input_json, set_input_json)               = signal(String::from("{}"));
+    let (json_error, set_json_error)               = signal(Option::<String>::None);
+    let (balance, set_balance)                     = signal(Option::<f64>::None);
 
     // Submission state
     let (error, set_error)           = signal(Option::<String>::None);
     let (load_error, set_load_error) = signal(Option::<String>::None);
     let (submitting, set_submitting) = signal(false);
 
+    // Active task being awaited via socket
+    let (active_task_id, set_active_task_id) = signal(Option::<i64>::None);
+
     // Result panel
     let (result_task, set_result_task) = signal(Option::<Task>::None);
 
-    // History panel
-    let (history, set_history)         = signal(Vec::<Task>::new());
-    let (history_open, set_history_open) = signal(false);
+    // History drawer
+    let (history, set_history)                 = signal(Vec::<Task>::new());
+    let (history_open, set_history_open)       = signal(false);
     let (history_loading, set_history_loading) = signal(false);
 
-    // WebSocket setup
+    // Single mount-time socket listener — no per-submission leaks
     #[cfg(target_arch = "wasm32")]
-    let socket = {
+    {
         use std::rc::Rc;
         use wasm_bindgen::prelude::*;
         let cfg = config.get_value();
@@ -59,22 +198,72 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
         if let Some(creds) = load_credentials() {
             sock.emit("join", &JsValue::from_str(&creds.username));
         }
-        StoredValue::new_local(sock)
-    };
+
+        let cb = Closure::wrap(Box::new(move |data: JsValue| {
+            let event_task_id = js_sys::Reflect::get(&data, &JsValue::from_str("task_id"))
+                .ok()
+                .and_then(|v| v.as_f64())
+                .map(|v| v as i64);
+
+            let task_id = match (active_task_id.get_untracked(), event_task_id) {
+                (Some(current), Some(event)) if current == event => current,
+                _ => return,
+            };
+
+            leptos::task::spawn_local(async move {
+                let cfg = config.get_value();
+                let Some(creds) = load_credentials() else { return; };
+                let Ok(client) = ApiClient::with_credentials(&cfg, &creds) else { return; };
+                let Ok(updated) = client.model().get_task(task_id).await else { return; };
+
+                if updated.result.is_some() {
+                    if let Ok(b) = client.wallet().get_balance().await {
+                        set_balance.set(Some(b.amount));
+                    }
+                }
+
+                let is_done = matches!(updated.status, TaskStatus::Completed | TaskStatus::Failed);
+                set_result_task.set(Some(updated.clone()));
+
+                if is_done {
+                    set_active_task_id.set(None);
+                    set_submitting.set(false);
+                    if history_open.get_untracked() {
+                        set_history.update(|h| {
+                            h.retain(|t| t.id != task_id);
+                            h.insert(0, updated);
+                            h.truncate(10);
+                        });
+                    }
+                }
+            });
+        }) as Box<dyn Fn(JsValue)>);
+
+        sock.on("task_updated", &cb);
+        let sock_sv = StoredValue::new_local(sock);
+        StoredValue::new_local(cb);
+        on_cleanup(move || sock_sv.with_value(|s| s.disconnect()));
+    }
 
     // Initial data load
     Effect::new(move |_| {
         let cfg = config.get_value();
         leptos::task::spawn_local(async move {
-            // Models endpoint is public — always use unauthenticated client
             match ApiClient::new(&cfg) {
-                Err(e) => set_load_error.set(Some(format!("Client init error: {}", e))),
+                Err(e) => {
+                    set_load_error.set(Some(format!("Client init error: {}", e)));
+                    set_models_loading.set(false);
+                }
                 Ok(client) => match client.model().list_models().await {
-                    Err(e) => set_load_error.set(Some(format!("Failed to load models: {}", e))),
+                    Err(e) => {
+                        set_load_error.set(Some(format!("Failed to load models: {}", e)));
+                        set_models_loading.set(false);
+                    }
                     Ok(ms) => {
                         let first_id = ms.first().map(|m| m.id);
                         set_models.set(ms);
                         set_selected_model_id.set(first_id);
+                        set_models_loading.set(false);
                     }
                 }
             }
@@ -94,7 +283,6 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
         models.get().into_iter().find(|m| m.id == id)
     };
 
-    // Load history on demand
     let load_history = move || {
         let cfg = config.get_value();
         set_history_loading.set(true);
@@ -111,17 +299,6 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
             }
             set_history_loading.set(false);
         });
-    };
-
-    let toggle_history = {
-        let load_history = load_history.clone();
-        move |_| {
-            let next = !history_open.get_untracked();
-            set_history_open.set(next);
-            if next && history.get_untracked().is_empty() {
-                load_history();
-            }
-        }
     };
 
     let handle_submit = move |ev: leptos::ev::SubmitEvent| {
@@ -165,50 +342,12 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
                     .await
                     .map_err(|e| e.to_string())?;
 
-                let task_id = task.id;
+                set_active_task_id.set(Some(task.id));
                 set_result_task.set(Some(task));
 
-                #[cfg(target_arch = "wasm32")]
-                {
-                    use wasm_bindgen::prelude::*;
-                    let cb_client = client.clone();
-                    let cb = Closure::wrap(Box::new(move |data: JsValue| {
-                        let event_id = js_sys::Reflect::get(&data, &JsValue::from_str("task_id"))
-                            .ok()
-                            .and_then(|v| v.as_f64())
-                            .map(|v| v as i64);
-
-                        if event_id != Some(task_id) { return; }
-
-                        let client = cb_client.clone();
-                        leptos::task::spawn_local(async move {
-                            if let Ok(updated) = client.model().get_task(task_id).await {
-                                if let Some(ref result) = updated.result {
-                                    set_balance.set(Some(current_balance - result.credits_charged));
-                                }
-                                let is_done = matches!(updated.status, TaskStatus::Completed | TaskStatus::Failed);
-                                set_result_task.set(Some(updated.clone()));
-                                if is_done {
-                                    set_submitting.set(false);
-                                    // Refresh history if open
-                                    if history_open.get_untracked() {
-                                        set_history.update(|h| {
-                                            h.retain(|t| t.id != task_id);
-                                            h.insert(0, updated);
-                                            h.truncate(10);
-                                        });
-                                    }
-                                }
-                            }
-                        });
-                    }) as Box<dyn Fn(JsValue)>);
-
-                    socket.get_value().on("task_updated", &cb);
-                    cb.forget();
-                    return Ok(());
-                }
-
                 #[cfg(not(target_arch = "wasm32"))]
+                set_submitting.set(false);
+
                 Ok(())
             }.await;
 
@@ -250,19 +389,27 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
                     <form on:submit=handle_submit class="space-y-5">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">"Model"</label>
-                            <select
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                on:change=move |ev| {
-                                    let val = event_target_value(&ev);
-                                    set_selected_model_id.set(val.parse::<i64>().ok());
-                                }
-                            >
-                                {move || models.get().into_iter().map(|m| {
-                                    let id = m.id.to_string();
-                                    let label = format!("{} — {:.2} credits", m.name, m.cost_per_request);
-                                    view! { <option value=id>{label}</option> }
-                                }).collect_view()}
-                            </select>
+                            {move || if models_loading.get() {
+                                view! {
+                                    <div class="h-10 w-full bg-gray-200 rounded-lg animate-pulse" />
+                                }.into_any()
+                            } else {
+                                view! {
+                                    <select
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        on:change=move |ev| {
+                                            let val = event_target_value(&ev);
+                                            set_selected_model_id.set(val.parse::<i64>().ok());
+                                        }
+                                    >
+                                        {move || models.get().into_iter().map(|m| {
+                                            let id = m.id.to_string();
+                                            let label = format!("{} — {:.2} credits", m.name, m.cost_per_request);
+                                            view! { <option value=id>{label}</option> }
+                                        }).collect_view()}
+                                    </select>
+                                }.into_any()
+                            }}
                             {move || selected_model().map(|m| view! {
                                 <p class="text-xs text-gray-400 mt-1">{m.description}</p>
                             })}
@@ -275,13 +422,21 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
                                 placeholder=r#"{"feature1": 1.0, "feature2": "value"}"#
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
                                 prop:value=input_json
-                                on:input=move |ev| set_input_json.set(event_target_value(&ev))
+                                on:input=move |ev| {
+                                    let val = event_target_value(&ev);
+                                    let valid = val.trim().is_empty() || serde_json::from_str::<Value>(&val).is_ok();
+                                    set_json_error.set(if valid { None } else { Some("Invalid JSON".into()) });
+                                    set_input_json.set(val);
+                                }
                             />
+                            {move || json_error.get().map(|msg| view! {
+                                <p class="text-xs text-red-500 mt-1">{msg}</p>
+                            })}
                         </div>
 
                         <button
                             type="submit"
-                            disabled=move || submitting.get() || selected_model_id.get().is_none()
+                            disabled=move || submitting.get() || selected_model_id.get().is_none() || json_error.get().is_some()
                             class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                             {move || if submitting.get() { "Waiting for result…" } else { "Submit" }}
@@ -291,131 +446,15 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
 
                 // RIGHT: Result + history
                 <div class="flex flex-col gap-4">
-
-                    // Result panel
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex-1">
-                        <h2 class="text-base font-semibold text-gray-800 mb-5">"Result"</h2>
-
-                        {move || match result_task.get() {
-                            None => view! {
-                                <div class="flex flex-col items-center justify-center h-48 text-gray-300 select-none">
-                                    <p class="text-5xl mb-3">"🥚"</p>
-                                    <p class="text-sm">"Submit a prediction to see results"</p>
-                                </div>
-                            }.into_any(),
-
-                            Some(task) => {
-                                let is_pending = matches!(task.status, TaskStatus::Pending | TaskStatus::Processing);
-                                view! {
-                                    <div class="space-y-4">
-                                        <div class="flex items-center gap-3">
-                                            <span class=format!(
-                                                "inline-block px-3 py-1 rounded-full text-xs font-semibold {}",
-                                                status_badge_class(&task.status)
-                                            )>
-                                                {status_label(&task.status)}
-                                            </span>
-                                            <span class="text-xs text-gray-400 font-mono">"#"{task.id.to_string()}</span>
-                                        </div>
-
-                                        {if is_pending {
-                                            view! {
-                                                <div class="flex items-center gap-2 text-sm text-yellow-600">
-                                                    <span class="animate-spin inline-block">"⟳"</span>
-                                                    "Processing your request…"
-                                                </div>
-                                            }.into_any()
-                                        } else {
-                                            view! { <div/> }.into_any()
-                                        }}
-
-                                        <div>
-                                            <p class="text-xs text-gray-500 mb-1">"Input"</p>
-                                            <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm font-mono overflow-x-auto whitespace-pre-wrap">
-                                                {serde_json::to_string_pretty(&task.input_data).unwrap_or_default()}
-                                            </pre>
-                                        </div>
-
-                                        {task.result.map(|r| view! {
-                                            <div class="space-y-3">
-                                                <div>
-                                                    <p class="text-xs text-gray-500 mb-1">"Credits charged"</p>
-                                                    <p class="text-xl font-bold text-gray-900">{format!("{:.2}", r.credits_charged)}</p>
-                                                </div>
-                                                <div>
-                                                    <p class="text-xs text-gray-500 mb-1">"Output"</p>
-                                                    <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm font-mono overflow-x-auto whitespace-pre-wrap">
-                                                        {serde_json::to_string_pretty(&r.output_data).unwrap_or_default()}
-                                                    </pre>
-                                                </div>
-                                            </div>
-                                        })}
-
-                                        <p class="text-xs text-gray-400">{task.created_at.chars().take(19).collect::<String>()}</p>
-                                    </div>
-                                }.into_any()
-                            }
-                        }}
-                    </div>
-
-                    // History drawer
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                        <button
-                            class="w-full flex items-center justify-between px-6 py-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
-                            on:click=toggle_history
-                        >
-                            <span>"Recent Requests"</span>
-                            <span class="text-gray-400 text-xs">
-                                {move || if history_open.get() { "▲ Hide" } else { "▼ Show" }}
-                            </span>
-                        </button>
-
-                        {move || if history_open.get() {
-                            view! {
-                                <div class="border-t border-gray-100">
-                                    {move || if history_loading.get() {
-                                        view! {
-                                            <p class="px-6 py-8 text-sm text-gray-400">"Loading…"</p>
-                                        }.into_any()
-                                    } else if history.get().is_empty() {
-                                        view! {
-                                            <p class="px-6 py-8 text-sm text-gray-400">"No requests yet."</p>
-                                        }.into_any()
-                                    } else {
-                                        view! {
-                                            <ul class="divide-y divide-gray-50 max-h-72 overflow-y-auto">
-                                                {history.get().into_iter().map(|task| {
-                                                    let badge = status_badge_class(&task.status);
-                                                    let label = status_label(&task.status);
-                                                    let credits = task.result.as_ref()
-                                                        .map(|r| format!("{:.2} cr", r.credits_charged))
-                                                        .unwrap_or_default();
-                                                    let task_clone = task.clone();
-                                                    view! {
-                                                        <li
-                                                            class="flex items-center gap-3 px-6 py-3 hover:bg-gray-50 cursor-pointer transition-colors"
-                                                            on:click=move |_| set_result_task.set(Some(task_clone.clone()))
-                                                        >
-                                                            <span class=format!("px-2 py-0.5 rounded-full text-xs font-medium border {}", badge)>
-                                                                {label}
-                                                            </span>
-                                                            <span class="text-xs text-gray-400 font-mono flex-1">"#"{task.id.to_string()}</span>
-                                                            <span class="text-xs text-gray-500">{credits}</span>
-                                                            <span class="text-xs text-gray-300">
-                                                                {task.created_at.chars().take(10).collect::<String>()}
-                                                            </span>
-                                                        </li>
-                                                    }
-                                                }).collect_view()}
-                                            </ul>
-                                        }.into_any()
-                                    }}
-                                </div>
-                            }.into_any()
-                        } else {
-                            view! { <div/> }.into_any()
-                        }}
-                    </div>
+                    <TaskResultPanel result_task=result_task />
+                    <HistoryDrawer
+                        history=history
+                        history_open=history_open
+                        history_loading=history_loading
+                        set_history_open=set_history_open
+                        set_result_task=set_result_task
+                        on_load=move |_: ()| load_history()
+                    />
                 </div>
             </div>
         </div>

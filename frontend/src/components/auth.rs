@@ -24,6 +24,56 @@ fn ErrorBanner(error: ReadSignal<Option<String>>) -> impl IntoView {
     }
 }
 
+#[component]
+fn AuthSuccessCard(
+    title: &'static str,
+    message: &'static str,
+    link_href: &'static str,
+    link_label: &'static str,
+) -> impl IntoView {
+    view! {
+        <div class="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-lg p-10 w-full max-w-md text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                    <span class="text-3xl">"✓"</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">{title}</h2>
+                <p class="text-gray-500 mb-6">{message}</p>
+                <a href=link_href class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
+                    {link_label}
+                </a>
+            </div>
+        </div>
+    }
+}
+
+#[component]
+fn AuthFormCard(
+    title: &'static str,
+    subtitle: &'static str,
+    footer_text: &'static str,
+    footer_link_href: &'static str,
+    footer_link_label: &'static str,
+    children: Children,
+) -> impl IntoView {
+    view! {
+        <div class="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+                <div class="text-center mb-7">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-1">{title}</h1>
+                    <p class="text-gray-500 text-sm">{subtitle}</p>
+                </div>
+                {children()}
+                <p class="text-center text-sm text-gray-500 mt-6">
+                    {footer_text}
+                    " "
+                    <a href=footer_link_href class="text-blue-600 hover:underline font-medium">{footer_link_label}</a>
+                </p>
+            </div>
+        </div>
+    }
+}
+
 #[island]
 pub fn LoginPage(config: ApiConfig) -> impl IntoView {
     let config = StoredValue::new(config);
@@ -76,63 +126,55 @@ pub fn LoginPage(config: ApiConfig) -> impl IntoView {
     };
 
     view! {
-        <div class="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
-            {move || if success.get() {
-                view! {
-                    <div class="bg-white rounded-2xl shadow-lg p-10 w-full max-w-md text-center">
-                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
-                            <span class="text-3xl">"✓"</span>
+        {move || if success.get() {
+            view! {
+                <AuthSuccessCard
+                    title="Signed in!"
+                    message="Redirecting to your dashboard…"
+                    link_href="/dashboard"
+                    link_label="Dashboard"
+                />
+            }.into_any()
+        } else {
+            view! {
+                <AuthFormCard
+                    title="Sign In"
+                    subtitle="ML Service Personal Cabinet"
+                    footer_text="Don't have an account?"
+                    footer_link_href="/register"
+                    footer_link_label="Register"
+                >
+                    <ErrorBanner error />
+                    <form on:submit=on_submit class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">"Username"</label>
+                            <input
+                                type="text"
+                                autocomplete="username"
+                                placeholder="your_username"
+                                class=INPUT_CLASS
+                                prop:value=username
+                                on:input=move |ev| set_username.set(event_target_value(&ev))
+                            />
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-2">"Signed in!"</h2>
-                        <p class="text-gray-500 mb-6">"Redirecting to your dashboard…"</p>
-                        <a href="/dashboard" class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
-                            "Dashboard"
-                        </a>
-                    </div>
-                }.into_any()
-            } else {
-                view! {
-                    <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
-                        <div class="text-center mb-7">
-                            <h1 class="text-3xl font-bold text-gray-900 mb-1">"Sign In"</h1>
-                            <p class="text-gray-500 text-sm">"ML Service Personal Cabinet"</p>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">"Password"</label>
+                            <input
+                                type="password"
+                                autocomplete="current-password"
+                                placeholder="••••••••"
+                                class=INPUT_CLASS
+                                prop:value=password
+                                on:input=move |ev| set_password.set(event_target_value(&ev))
+                            />
                         </div>
-                        <ErrorBanner error />
-                        <form on:submit=on_submit class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">"Username"</label>
-                                <input
-                                    type="text"
-                                    autocomplete="username"
-                                    placeholder="your_username"
-                                    class=INPUT_CLASS
-                                    prop:value=username
-                                    on:input=move |ev| set_username.set(event_target_value(&ev))
-                                />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">"Password"</label>
-                                <input
-                                    type="password"
-                                    autocomplete="current-password"
-                                    placeholder="••••••••"
-                                    class=INPUT_CLASS
-                                    prop:value=password
-                                    on:input=move |ev| set_password.set(event_target_value(&ev))
-                                />
-                            </div>
-                            <button type="submit" disabled=loading class=BTN_CLASS>
-                                {move || if loading.get() { "Signing in…" } else { "Sign In" }}
-                            </button>
-                        </form>
-                        <p class="text-center text-sm text-gray-500 mt-6">
-                            "Don't have an account? "
-                            <a href="/register" class="text-blue-600 hover:underline font-medium">"Register"</a>
-                        </p>
-                    </div>
-                }.into_any()
-            }}
-        </div>
+                        <button type="submit" disabled=loading class=BTN_CLASS>
+                            {move || if loading.get() { "Signing in…" } else { "Sign In" }}
+                        </button>
+                    </form>
+                </AuthFormCard>
+            }.into_any()
+        }}
     }
 }
 
@@ -178,73 +220,65 @@ pub fn RegisterPage(config: ApiConfig) -> impl IntoView {
     };
 
     view! {
-        <div class="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
-            {move || if success.get() {
-                view! {
-                    <div class="bg-white rounded-2xl shadow-lg p-10 w-full max-w-md text-center">
-                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
-                            <span class="text-3xl">"✓"</span>
+        {move || if success.get() {
+            view! {
+                <AuthSuccessCard
+                    title="Account created!"
+                    message="You can now sign in."
+                    link_href="/login"
+                    link_label="Sign In"
+                />
+            }.into_any()
+        } else {
+            view! {
+                <AuthFormCard
+                    title="Create Account"
+                    subtitle="Join the ML Service"
+                    footer_text="Already have an account?"
+                    footer_link_href="/login"
+                    footer_link_label="Sign In"
+                >
+                    <ErrorBanner error />
+                    <form on:submit=on_submit class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">"Username"</label>
+                            <input
+                                type="text"
+                                autocomplete="username"
+                                placeholder="your_username"
+                                class=INPUT_CLASS
+                                prop:value=username
+                                on:input=move |ev| set_username.set(event_target_value(&ev))
+                            />
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-2">"Account created!"</h2>
-                        <p class="text-gray-500 mb-6">"You can now sign in."</p>
-                        <a href="/login" class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
-                            "Sign In"
-                        </a>
-                    </div>
-                }.into_any()
-            } else {
-                view! {
-                    <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
-                        <div class="text-center mb-7">
-                            <h1 class="text-3xl font-bold text-gray-900 mb-1">"Create Account"</h1>
-                            <p class="text-gray-500 text-sm">"Join the ML Service"</p>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">"Email"</label>
+                            <input
+                                type="email"
+                                autocomplete="email"
+                                placeholder="you@example.com"
+                                class=INPUT_CLASS
+                                prop:value=email
+                                on:input=move |ev| set_email.set(event_target_value(&ev))
+                            />
                         </div>
-                        <ErrorBanner error />
-                        <form on:submit=on_submit class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">"Username"</label>
-                                <input
-                                    type="text"
-                                    autocomplete="username"
-                                    placeholder="your_username"
-                                    class=INPUT_CLASS
-                                    prop:value=username
-                                    on:input=move |ev| set_username.set(event_target_value(&ev))
-                                />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">"Email"</label>
-                                <input
-                                    type="email"
-                                    autocomplete="email"
-                                    placeholder="you@example.com"
-                                    class=INPUT_CLASS
-                                    prop:value=email
-                                    on:input=move |ev| set_email.set(event_target_value(&ev))
-                                />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">"Password"</label>
-                                <input
-                                    type="password"
-                                    autocomplete="new-password"
-                                    placeholder="Min. 6 characters"
-                                    class=INPUT_CLASS
-                                    prop:value=password
-                                    on:input=move |ev| set_password.set(event_target_value(&ev))
-                                />
-                            </div>
-                            <button type="submit" disabled=loading class=BTN_CLASS>
-                                {move || if loading.get() { "Creating…" } else { "Create Account" }}
-                            </button>
-                        </form>
-                        <p class="text-center text-sm text-gray-500 mt-6">
-                            "Already have an account? "
-                            <a href="/login" class="text-blue-600 hover:underline font-medium">"Sign In"</a>
-                        </p>
-                    </div>
-                }.into_any()
-            }}
-        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">"Password"</label>
+                            <input
+                                type="password"
+                                autocomplete="new-password"
+                                placeholder="Min. 6 characters"
+                                class=INPUT_CLASS
+                                prop:value=password
+                                on:input=move |ev| set_password.set(event_target_value(&ev))
+                            />
+                        </div>
+                        <button type="submit" disabled=loading class=BTN_CLASS>
+                            {move || if loading.get() { "Creating…" } else { "Create Account" }}
+                        </button>
+                    </form>
+                </AuthFormCard>
+            }.into_any()
+        }}
     }
 }

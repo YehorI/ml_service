@@ -16,8 +16,8 @@ impl Credentials {
     }
 }
 
+#[allow(unused_variables)]
 pub fn save_credentials(c: &Credentials) {
-    let _ = c;
     #[cfg(target_arch = "wasm32")]
     if let Some(storage) = local_storage() {
         if let Ok(json) = serde_json::to_string(c) {
