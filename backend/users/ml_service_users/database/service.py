@@ -67,6 +67,10 @@ class Service(SQLAlchemyService):
         await self.session.flush()
         return _to_user(orm)
 
+    async def list_users(self) -> list[User]:
+        rows = (await self.session.execute(select(UserORM))).scalars().all()
+        return [_to_user(row) for row in rows]
+
     async def update_user(
         self,
         user: User,

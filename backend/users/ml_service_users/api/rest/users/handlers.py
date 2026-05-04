@@ -1,7 +1,7 @@
 import fastapi
 from database_repository.dto.users import User
 from ml_service_common.fastapi.exceptions import HTTPNotFound, HTTPNotAuthenticated
-from ml_service_users.api.rest.dependencies import get_database
+from ml_service_users.api.rest.dependencies import get_database, require_admin
 from ml_service_users.api.rest.users.dependencies import get_path_user
 from ml_service_users.api.rest.users.schemas import (LoginRequest,
                                                      LoginResponse,
@@ -23,6 +23,14 @@ class UserNotFoundError(HTTPNotFound):
 
 class InvalidPasswordError(HTTPNotAuthenticated):
     pass
+
+
+async def list_users(
+    _admin: User = fastapi.Depends(require_admin),
+    database: Service = fastapi.Depends(get_database),
+) -> list[UserResponse]:
+    users = await database.list_users()
+    return [UserResponse.from_db_model(u) for u in users]
 
 
 async def register(

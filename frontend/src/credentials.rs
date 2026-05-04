@@ -6,6 +6,8 @@ const CREDS_KEY: &str = "ml_credentials";
 pub struct Credentials {
     pub username: String,
     pub password: String,
+    #[serde(default)]
+    pub role: Option<String>,
 }
 
 impl Credentials {

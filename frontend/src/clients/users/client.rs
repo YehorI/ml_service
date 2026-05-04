@@ -22,4 +22,8 @@ impl UsersClient {
     pub async fn get_user(&self, user_id: i64) -> ClientResult<User> {
         self.base.rest_get(&format!("/users/{}", user_id), None).await
     }
+
+    pub async fn list_users(&self) -> ClientResult<Vec<User>> {
+        self.base.rest_get("/users/", None).await
+    }
 }

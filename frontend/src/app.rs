@@ -8,8 +8,9 @@ use leptos_router::{
 use crate::clients::config::ApiConfig;
 use crate::components::auth::{LoginPage, RegisterPage};
 use crate::components::home::HomeCta;
-use crate::components::nav::NavAuthButtons;
+use crate::components::nav::{AdminNavLink, NavAuthButtons};
 use crate::dashboard::Dashboard;
+use crate::components::admin::AdminPage;
 use crate::components::history::HistoryPage;
 use crate::components::predict::PredictPage;
 
@@ -51,6 +52,7 @@ pub fn App() -> impl IntoView {
                     <Route path=StaticSegment("dashboard") view=|| view! { <Dashboard config=expect_context()/> }/>
                     <Route path=StaticSegment("predict") view=|| view! { <PredictPage config=expect_context()/> }/>
                     <Route path=StaticSegment("history") view=|| view! { <HistoryPage config=expect_context()/> }/>
+                    <Route path=StaticSegment("admin") view=|| view! { <AdminPage config=expect_context()/> }/>
                 </Routes>
             </main>
         </Router>
@@ -73,6 +75,7 @@ fn Nav() -> impl IntoView {
             <A href="/history" attr:class="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
                 "History"
             </A>
+            <AdminNavLink/>
             <div class="ml-auto">
                 <NavAuthButtons/>
             </div>

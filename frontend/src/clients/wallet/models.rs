@@ -11,6 +11,12 @@ pub struct DepositRequest {
     pub amount: f64,
 }
 
+#[derive(Debug, Serialize)]
+pub struct AdminDepositRequest {
+    pub target_user_id: i64,
+    pub amount: f64,
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct Transaction {
     pub id: i64,

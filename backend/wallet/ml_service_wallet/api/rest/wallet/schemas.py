@@ -13,6 +13,11 @@ class DepositRequest(BaseModel):
     amount: float = Field(gt=0)
 
 
+class AdminDepositRequest(BaseModel):
+    target_user_id: int
+    amount: float = Field(gt=0)
+
+
 class TransactionResponse(BaseModel):
     id: int
     type: str

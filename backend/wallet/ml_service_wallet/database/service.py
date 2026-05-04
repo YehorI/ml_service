@@ -28,6 +28,12 @@ class Service(SQLAlchemyService):
     def __init__(self, settings: Settings | None = None) -> None:
         super().__init__(settings=settings or Settings(), logger=None)
 
+    async def get_user_by_id(self, user_id: int) -> User | None:
+        row = (
+            await self.session.execute(select(UserORM).where(UserORM.id == user_id))
+        ).scalar_one_or_none()
+        return None if row is None else _to_user(row)
+
     async def get_user_by_username(self, username: str) -> User | None:
         row = (
             await self.session.execute(select(UserORM).where(UserORM.username == username))

@@ -22,4 +22,12 @@ impl WalletClient {
     pub async fn list_transactions(&self) -> ClientResult<Vec<Transaction>> {
         self.base.rest_get("/wallet/transactions", None).await
     }
+
+    pub async fn admin_get_balance(&self, target_user_id: i64) -> ClientResult<WalletBalance> {
+        self.base.rest_get(&format!("/wallet/admin/balance/{}", target_user_id), None).await
+    }
+
+    pub async fn admin_deposit(&self, target_user_id: i64, amount: f64) -> ClientResult<WalletBalance> {
+        self.base.rest_post("/wallet/admin/deposit", AdminDepositRequest { target_user_id, amount }).await
+    }
 }

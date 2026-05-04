@@ -97,7 +97,7 @@ pub fn LoginPage(config: ApiConfig) -> impl IntoView {
                 if p.is_empty() { return Err("Password is required".into()); }
 
                 let client = ApiClient::new(&cfg).map_err(|e| e.to_string())?;
-                client.users().login(&LoginRequest { username: u.clone(), password: p.clone() })
+                let resp = client.users().login(&LoginRequest { username: u.clone(), password: p.clone() })
                     .await
                     .map_err(|e| match e {
                         RestClientError::ResponseError { status, .. }
@@ -109,7 +109,8 @@ pub fn LoginPage(config: ApiConfig) -> impl IntoView {
                         _ => "Login failed. Please try again.".to_string(),
                     })?;
 
-                let creds = Credentials { username: u, password: p };
+                let role = resp.user.role.clone();
+                let creds = Credentials { username: u, password: p, role: Some(role) };
                 save_credentials(&creds);
                 #[cfg(target_arch = "wasm32")]
                 {

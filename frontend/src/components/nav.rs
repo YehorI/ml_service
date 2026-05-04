@@ -2,11 +2,30 @@ use leptos::prelude::*;
 use crate::credentials::{clear_credentials, load_credentials};
 
 #[island]
+pub fn AdminNavLink() -> impl IntoView {
+    let (is_admin, set_is_admin) = signal(false);
+
+    Effect::new(move |_| {
+        let creds = load_credentials();
+        set_is_admin.set(creds.as_ref().and_then(|c| c.role.as_deref()).map(|r| r == "admin").unwrap_or(false));
+    });
+
+    view! {
+        {move || is_admin.get().then(|| view! {
+            <a href="/admin" class="text-sm font-medium text-purple-600 hover:text-purple-800 transition-colors">
+                "Admin"
+            </a>
+        })}
+    }
+}
+
+#[island]
 pub fn NavAuthButtons() -> impl IntoView {
     let (logged_in, set_logged_in) = signal(false);
 
     Effect::new(move |_| {
-        set_logged_in.set(load_credentials().is_some());
+        let creds = load_credentials();
+        set_logged_in.set(creds.is_some());
     });
 
     let sign_out = move |_| {
