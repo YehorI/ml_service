@@ -7,6 +7,7 @@ ML inference platform. FastAPI backend split into three microservices (users, wa
 - Docker
 - Docker Compose
 - Make
+- Rust toolchain with `wasm32-unknown-unknown` target and `cargo-leptos` (frontend only)
 
 ## Configuration
 
@@ -15,6 +16,7 @@ Copy the example env files and adjust if needed. The defaults work for local dev
 ```sh
 cp backend/.env.example backend/.env
 cp deploy/.env.example deploy/.env
+cp frontend/.env.example frontend/.env
 ```
 
 For production, set your email for Let's Encrypt in `deploy/.env`:
@@ -37,6 +39,14 @@ To rebuild and restart from scratch:
 ```sh
 make stage-reup
 ```
+
+The staging setup does not containerize the frontend. Run it separately after the backend is up:
+
+```sh
+cd frontend && cargo leptos serve
+```
+
+The UI will be available at http://localhost:3000.
 
 ## Production
 
