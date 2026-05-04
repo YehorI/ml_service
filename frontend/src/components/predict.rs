@@ -165,15 +165,15 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
     let config = StoredValue::new(config);
 
     // Form state
-    let (models, set_models)                       = signal(Vec::<MlModel>::new());
-    let (models_loading, set_models_loading)       = signal(true);
+    let (models, set_models) = signal(Vec::<MlModel>::new());
+    let (models_loading, set_models_loading) = signal(true);
     let (selected_model_id, set_selected_model_id) = signal(Option::<i64>::None);
-    let (input_json, set_input_json)               = signal(String::from("{}"));
-    let (json_error, set_json_error)               = signal(Option::<String>::None);
-    let (balance, set_balance)                     = signal(Option::<f64>::None);
+    let (input_json, set_input_json) = signal(String::from("{}"));
+    let (json_error, set_json_error) = signal(Option::<String>::None);
+    let (balance, set_balance) = signal(Option::<f64>::None);
 
     // Submission state
-    let (error, set_error)           = signal(Option::<String>::None);
+    let (error, set_error) = signal(Option::<String>::None);
     let (load_error, set_load_error) = signal(Option::<String>::None);
     let (submitting, set_submitting) = signal(false);
 
@@ -184,7 +184,7 @@ pub fn PredictPage(config: ApiConfig) -> impl IntoView {
     let (result_task, set_result_task) = signal(Option::<Task>::None);
 
     // History drawer
-    let (history, set_history)                 = signal(Vec::<Task>::new());
+    let (history, set_history) = signal(Vec::<Task>::new());
     let (history_open, set_history_open)       = signal(false);
     let (history_loading, set_history_loading) = signal(false);
 

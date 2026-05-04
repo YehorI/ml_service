@@ -1,6 +1,6 @@
 # ml_service
 
-ML inference platform. FastAPI backend split into three microservices (users, wallet, model), an async worker for model inference, a Leptos/Rust SSR frontend, PostgreSQL, and RabbitMQ for inter-service messaging.
+ML service. Easy-to-add new models. User system, Wallet, Full async 
 
 ## Prerequisites
 
