@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field
-
 from ml_service_wallet.domains.transaction import Transaction, TransactionType
+from pydantic import BaseModel, Field
 
 
 class WalletBalanceResponse(BaseModel):

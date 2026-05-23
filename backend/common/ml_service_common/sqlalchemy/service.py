@@ -2,8 +2,10 @@ import contextvars
 from collections.abc import AsyncGenerator, Generator
 from contextlib import asynccontextmanager, contextmanager
 
-from ml_service_common.sqlalchemy.settings import DatabaseSettings, get_settings
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from ml_service_common.sqlalchemy.settings import (DatabaseSettings,
+                                                   get_settings)
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine)
 
 
 class HaveNoSessionError(Exception):

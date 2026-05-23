@@ -3,10 +3,7 @@ from typing import Any
 from database_repository.dto.users import User
 from ml_service_model.domains.task import MLTask
 from ml_service_model.interfaces.repositories import (
-    MLModelRepository,
-    MLTaskRepository,
-    PredictionResultRepository,
-)
+    MLModelRepository, MLTaskRepository, PredictionResultRepository)
 
 
 class ModelNotFoundError(Exception):

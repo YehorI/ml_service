@@ -1,8 +1,7 @@
-import facet
 import aio_pika
-
-from ml_service_common.messaging.schemas import PredictTaskMessage
+import facet
 from ml_service_common.messaging.settings import MessagingSettings
+from pydantic import BaseModel
 
 
 class RabbitMQPublisher(facet.AsyncioServiceMixin):
@@ -23,7 +22,7 @@ class RabbitMQPublisher(facet.AsyncioServiceMixin):
             self._connection = None
             self._channel = None
 
-    async def publish(self, message: PredictTaskMessage) -> None:
+    async def publish(self, message: BaseModel) -> None:
         if self._channel is None:
             raise RuntimeError("Publisher not started")
         body = message.model_dump_json().encode()

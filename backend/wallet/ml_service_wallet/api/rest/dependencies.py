@@ -1,9 +1,8 @@
 from collections.abc import AsyncGenerator
 
 import fastapi
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-
 from database_repository.dto.users import User
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from ml_service_common.auth import hash_password
 from ml_service_wallet.database.service import Service
 

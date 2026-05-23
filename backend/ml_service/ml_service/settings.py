@@ -1,6 +1,6 @@
-import ml_service_wallet
-import ml_service_users
 import ml_service_model
+import ml_service_users
+import ml_service_wallet
 from ml_service_common.pydantic_settings import PydanticSettings
 
 

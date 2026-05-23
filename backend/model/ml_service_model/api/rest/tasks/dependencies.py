@@ -1,8 +1,9 @@
 import fastapi
-
 from database_repository.dto.users import User
-from ml_service_model.api.rest.dependencies import get_current_user, get_database
-from ml_service_model.database.repositories import SqlAlchemyAltMLTaskRepository
+from ml_service_model.api.rest.dependencies import (get_current_user,
+                                                    get_database)
+from ml_service_model.database.repositories import \
+    SqlAlchemyAltMLTaskRepository
 from ml_service_model.database.service import Service
 from ml_service_model.domains.task import MLTask
 

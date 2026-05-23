@@ -1,5 +1,4 @@
 import fastapi
-
 from ml_service_users.api.rest.users import handlers
 
 router = fastapi.APIRouter()

@@ -1,5 +1,4 @@
 import fastapi
-
 from ml_service_model.api.rest.tasks import handlers
 from ml_service_model.api.rest.tasks.schemas import TaskResponse
 

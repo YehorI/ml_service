@@ -1,10 +1,9 @@
 from datetime import datetime
 from enum import Enum as PyEnum
 
+from database_repository.models.base import Base
 from sqlalchemy import JSON, DateTime, Enum, Float, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from database_repository.models.base import Base
 
 
 class TaskStatusORM(PyEnum):

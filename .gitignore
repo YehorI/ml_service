@@ -8,10 +8,19 @@ wheels/
 
 .vscode
 
-# Virtual environments
 .venv
 
 .env
 *.mx
 .vscode
 .pytest_cache
+
+# Rust
+debug/
+target/
+
+Cargo.lock
+
+**/*.rs.bk
+
+*.pdb

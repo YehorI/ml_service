@@ -1,9 +1,8 @@
-from ml_service_common.sqlalchemy_alt.service import SQLAlchemyService
-from sqlalchemy import select
-
 from database_repository.dto.users import AdminUser, User, UserRole
 from database_repository.models import UserORM, UserRoleORM
+from ml_service_common.sqlalchemy_alt.service import SQLAlchemyService
 from ml_service_model.database.settings import Settings
+from sqlalchemy import select
 
 
 def _to_user(orm: UserORM) -> User:

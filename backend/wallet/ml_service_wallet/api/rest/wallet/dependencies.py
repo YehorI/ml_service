@@ -1,8 +1,9 @@
 import fastapi
-
 from database_repository.dto.users import User
-from ml_service_wallet.api.rest.dependencies import get_current_user, get_database
-from ml_service_wallet.database.repositories import SqlAlchemyAltBalanceRepository
+from ml_service_wallet.api.rest.dependencies import (get_current_user,
+                                                     get_database)
+from ml_service_wallet.database.repositories import \
+    SqlAlchemyAltBalanceRepository
 from ml_service_wallet.database.service import Service
 from ml_service_wallet.domains.wallet import Wallet
 

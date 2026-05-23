@@ -1,6 +1,5 @@
-from pydantic import BaseModel
-
 from ml_service_model.domains.ml_model import MLModel
+from pydantic import BaseModel
 
 
 class ModelResponse(BaseModel):

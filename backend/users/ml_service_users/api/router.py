@@ -1,5 +1,4 @@
 import fastapi
-
 from ml_service_users.api.health import HealthResponse, health
 from ml_service_users.api.rest.router import router as rest_router
 
